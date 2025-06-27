@@ -22,10 +22,9 @@ final class CoinsRepositoryImpl: CoinsRepository {
     ) -> AnyPublisher<[CoinModel], APIError> {
         coinsAPIService.fetchCoinsMarkets(page: page, perPage: perPage)
             .tryMap { coinsModelResponse in
-                print(coinsModelResponse)
                 return coinsModelResponse.compactMap { CoinModel.from(response: $0) }
             }
-            .mapError { _ in
+            .mapError { error -> APIError in
                 return APIError.fetchCoinsMarkets
             }
             .eraseToAnyPublisher()

@@ -3,6 +3,7 @@ import Kingfisher
 
 final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
     // UI
+    private let iconContainerView = UIView()
     private let iconImageView = UIImageView()
     private let nameLabel = UILabel()
     private let priceLabel = UILabel()
@@ -44,6 +45,7 @@ final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
 
     func bind(with model: CoinModel) {
         iconImageView.kf.setImage(with: model.imageURL)
+        iconImageView.kf.indicatorType = .activity
         nameLabel.text = model.name
         priceLabel.text = model.formattedPrice
     }
@@ -59,29 +61,38 @@ final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
 //MARK: - Configure UI
 private extension CoinTableViewCell {
     func addSubviews() {
-        contentView.addSubview(iconImageView)
+        contentView.addSubview(iconContainerView)
+        iconContainerView.addSubview(iconImageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(priceLabel)
         contentView.addSubview(favoriteButton)
     }
 
     func setConstraints() {
-        iconImageView.snp.makeConstraints {
+        iconContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.bottom.equalToSuperview().offset(-16)
-            $0.height.width.equalTo(24)
+            $0.height.width.equalTo(44)
             $0.leading.equalToSuperview().offset(16)
+        }
+
+        iconImageView.snp.makeConstraints {
+//            $0.top.equalToSuperview().offset(16)
+//            $0.bottom.equalToSuperview().offset(-16)
+            $0.height.width.equalTo(24)
+            $0.center.equalToSuperview()
+//            $0.leading.equalToSuperview().offset(16)
         }
 
         nameLabel.snp.makeConstraints {
             $0.bottom.equalTo(contentView.snp.centerY)
-            $0.leading.equalTo(iconImageView.snp.trailing).offset(8)
+            $0.leading.equalTo(iconImageView.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-76)
         }
 
         priceLabel.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.centerY)
-            $0.leading.equalTo(iconImageView.snp.trailing).offset(8)
+            $0.leading.equalTo(iconImageView.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-76)
         }
 
@@ -95,10 +106,14 @@ private extension CoinTableViewCell {
     func configureViews() {
         // self
         backgroundColor = .white
-        layer.cornerRadius = 12
-        layer.borderWidth = 1
+        layer.cornerRadius = 24
+        layer.borderWidth = 0.7
         layer.borderColor = UIColor.lightGray.cgColor
         selectionStyle = .none
+
+        // iconContainerView
+        iconContainerView.layer.cornerRadius = 22
+        iconContainerView.backgroundColor = .mercury
 
         // nameLabel
         nameLabel.textColor = .black

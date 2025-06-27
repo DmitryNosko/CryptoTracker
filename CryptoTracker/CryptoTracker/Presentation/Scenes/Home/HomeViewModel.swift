@@ -2,8 +2,14 @@ import Combine
 import UIKit
 
 final class HomeViewModel: CombinableViewModel {
+    // Data
     private var coinModels: [CoinModel] = []
+    private var currentPage = 1
+    private let perPage = 25
+    private var isLoadingPage = false
+    private var hasMorePages = true
 
+    // Init
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
 
@@ -21,6 +27,8 @@ final class HomeViewModel: CombinableViewModel {
 extension HomeViewModel {
     struct Input {
         let didLoad: AnyPublisher<Void, Never>
+        let refreshTrigger: AnyPublisher<Void, Never>
+        let didReachBottom: AnyPublisher<Void, Never>
     }
 
     final class Output: ObservableObject {
@@ -32,44 +40,72 @@ extension HomeViewModel {
         let output = Output()
 
         input.didLoad
+            .merge(with: input.refreshTrigger)
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.currentPage = 1
+                self?.hasMorePages = true
+            })
+            .merge(with: input.didReachBottom
+                .filter { [weak self] in
+                    guard let self else {
+                        return false
+                    }
+
+                    return !self.isLoadingPage && self.hasMorePages
+                }
+            )
             .flatMap { [weak self] in
                 guard let self else {
-                    return Empty<[CoinModel], Never>()
-                        .eraseToAnyPublisher()
+                    return Empty<[CoinModel], Never>().eraseToAnyPublisher()
                 }
 
+                self.isLoadingPage = true
                 output.isLoading = true
-                return self.coinsRepository.fetchCoinsMarkets(page: 1, perPage: 25)
-                    .receive(on: DispatchQueue.main)
-                    .retryWhen { result, attempt  in
+
+                return self.coinsRepository.fetchCoinsMarkets(page: self.currentPage, perPage: self.perPage)
+                    .retryWhen { result, attempt in
                         switch result {
-                        case .success(_):
+                        case .success:
                             return Just(false).eraseToAnyPublisher()
-                        case .failure(_):
+                        case .failure:
                             output.isLoading = false
                             return self.router.showAlertOfType(.fetchCoinsMarketsError)
-                                .map { alertActionType in
-                                    if case .bool(let shouldRetryRequest) = alertActionType {
-                                        if shouldRetryRequest {
-                                            output.isLoading = true
-                                        }
-                                        return shouldRetryRequest
+                                .map { actionType in
+                                    if case .bool(let shouldRetry) = actionType, shouldRetry {
+                                        output.isLoading = true
+                                        return true
                                     }
                                     return false
                                 }
                                 .eraseToAnyPublisher()
                         }
                     }
-                    .catch { error -> AnyPublisher<[CoinModel], Never> in
+                    .catch { _ -> AnyPublisher<[CoinModel], Never> in
                         output.isLoading = false
-                        return Empty<[CoinModel], Never>()
-                            .eraseToAnyPublisher()
+                        return Empty().eraseToAnyPublisher()
                     }
+                    .map { [weak self] newCoins in
+                        guard let self else {
+                            return []
+                        }
+
+                        if newCoins.count < self.perPage {
+                            self.hasMorePages = false
+                        } else {
+                            self.currentPage += 1
+                        }
+
+                        if self.currentPage == 2 {
+                            return newCoins
+                        } else {
+                            return output.coinModels + newCoins
+                        }
+                    }
+                    .handleEvents(receiveOutput: { _ in
+                        output.isLoading = false
+                        self.isLoadingPage = false
+                    })
                     .eraseToAnyPublisher()
-            }
-            .map { coinModels in
-                output.isLoading = false
-                return coinModels
             }
             .assign(to: \.coinModels, on: output)
             .store(in: cancelBag)

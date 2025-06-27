@@ -7,6 +7,7 @@ final class HomeViewController: UIViewController {
     // UI
     private let titleLabel = UILabel()
     private let searchView = SearchView()
+    private let refreshControl = UIRefreshControl()
     private let tableView = UITableView()
     private let emptySearchLabel = UILabel()
     private let noPlacesFoundLabel = UILabel()
@@ -24,6 +25,8 @@ final class HomeViewController: UIViewController {
     // Combine
     private let cancelBag = CancelBag()
     private let didLoad = PassthroughSubject<Void, Never>()
+    private let refreshTrigger = PassthroughSubject<Void, Never>()
+    private let didReachBottom = PassthroughSubject<Void, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -51,7 +54,9 @@ final class HomeViewController: UIViewController {
 private extension HomeViewController {
     func bindViewModel(_ viewModel: HomeViewModel) {
         let input = HomeViewModel.Input(
-            didLoad: didLoad.eraseToAnyPublisher()
+            didLoad: didLoad.eraseToAnyPublisher(),
+            refreshTrigger: refreshTrigger.eraseToAnyPublisher(),
+            didReachBottom: didReachBottom.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -84,6 +89,8 @@ private extension HomeViewController {
                 guard let self else {
                     return
                 }
+
+                self.refreshControl.endRefreshing()
                 self.coinModels = coinModels
                 if coinModels.isEmpty && isKeyboardShown {
                     self.emptyTitleLabel.isHidden = true
@@ -159,7 +166,7 @@ private extension HomeViewController {
         }
 
         emptyTitleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
+            $0.center.equalToSuperview()
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
@@ -188,6 +195,9 @@ private extension HomeViewController {
         // searchView
         searchView.isHidden = true
 
+        // refreshControl
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+
         // tableView
         tableView.backgroundColor = .clear
         tableView.register(
@@ -204,6 +214,7 @@ private extension HomeViewController {
         tableView.keyboardDismissMode = .onDrag
         tableView.backgroundColor = .white
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
+        tableView.refreshControl = refreshControl
 
         // emptySearchLabel
         emptySearchLabel.text = "No Matching Coins"
@@ -222,7 +233,7 @@ private extension HomeViewController {
         noPlacesFoundLabel.isHidden = true
 
         // emptyTitleLabel
-        emptyTitleLabel.text = "No Coins Yet"
+        emptyTitleLabel.text = "Ooopps..."
         emptyTitleLabel.textAlignment = .center
         emptyTitleLabel.textColor = .black
         emptyTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
@@ -239,7 +250,7 @@ private extension HomeViewController {
 
         // activityIndicatorView
         activityIndicatorView.style = .medium
-        activityIndicatorView.color = .dodgerBlue
+        activityIndicatorView.color = .black
         activityIndicatorView.hidesWhenStopped = true
     }
 
@@ -328,10 +339,27 @@ extension HomeViewController: UITableViewDelegate {
     ) {
 //        didSelectPlaceTrigger.send(indexPath)
     }
+
+    func scrollViewDidScroll
+    (
+        _ scrollView: UIScrollView
+    ) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+
+        if offsetY > contentHeight - height * 1.5 {
+            didReachBottom.send()
+        }
+    }
 }
 
 private extension HomeViewController {
     @objc func onTouch() {
         view.endEditing(true)
+    }
+
+    @objc func handleRefresh() {
+        refreshTrigger.send()
     }
 }

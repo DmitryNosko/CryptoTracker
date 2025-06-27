@@ -34,11 +34,16 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
             guard let data = result.data else {
                 throw APIError.fetchCoinsMarkets
             }
+
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []), !(json is [Any]) {
+                debugPrint("🛑 Ignoring invalid response format at page \(page)")
+                return Data("[]".utf8)
+            }
+
             return data
         }
         .decode(type: [CoinModelResponse].self, decoder: JSONDecoder())
         .mapError { error in
-            debugPrint("🛑 error to fetchCoinsMarkets = \(error)")
             return .fetchCoinsMarkets
         }
         .eraseToAnyPublisher()
