@@ -2,6 +2,7 @@ import UIKit
 import Combine
 
 protocol HomeRouter {
+    func showAlertOfType(_ alertType: AlertType) -> AnyPublisher<AlertActionType, Never>
 }
 
 final class HomeRouterImpl: HomeRouter {
@@ -12,5 +13,12 @@ final class HomeRouterImpl: HomeRouter {
         view: UIViewController
     ) {
         self.view = view
+    }
+
+    func showAlertOfType
+    (
+        _ alertType: AlertType
+    ) -> AnyPublisher<AlertActionType, Never> {
+        view?.showAlert(alertType) ?? Just(.cancel).eraseToAnyPublisher()
     }
 }

@@ -26,5 +26,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 // MARK: - AppContext Registration
 private extension SceneDelegate {
-    func registerAppContext() {}
+    func registerAppContext() {
+        appContext.registerLazy(
+            CoinsAPIService.self,
+            factory: CoinsAPIServiceImpl()
+        )
+        appContext.registerLazy(
+            CoinsRepository.self,
+            factory: CoinsRepositoryImpl(coinsAPIService: self.appContext.resolve(CoinsAPIService.self))
+        )
+    }
 }

@@ -1,7 +1,9 @@
-//
-//  AppConstants.swift
-//  CryptoTracker
-//
-//  Created by Дима Носко on 27.06.25.
-//
+enum AppConstants {
+    enum API {
+        static let baseURL = "https://api.coingecko.com/api/v3"
 
+        enum Coins {
+            static let coinsMarkets = "/coins/markets"
+        }
+    }
+}

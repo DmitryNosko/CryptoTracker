@@ -1,7 +1,7 @@
 import UIKit
 import Combine
 
-final class DashboardViewController: UITabBarController {
+final class DashboardViewController: UITabBarController, UITabBarControllerDelegate {
     var viewModel: DashboardViewModel!
 
     // Combine
@@ -51,5 +51,6 @@ private extension DashboardViewController {
     func configureViews() {
         // tabBar
         tabBar.tintColor = .dodgerBlue
+        tabBar.backgroundColor = .mercury
     }
 }
