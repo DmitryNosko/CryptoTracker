@@ -48,6 +48,8 @@
 		24F8CA122E0FDC390005E9E1 /* CoinPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8CA112E0FDC340005E9E1 /* CoinPrice.swift */; };
 		24F8CA152E0FEE690005E9E1 /* CoinCash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8CA142E0FEE650005E9E1 /* CoinCash.swift */; };
 		24F8CA182E0FF8CF0005E9E1 /* CoinCacheWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8CA172E0FF8CE0005E9E1 /* CoinCacheWrapper.swift */; };
+		24F8CA1A2E1016F10005E9E1 /* SortOptionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8CA192E1016EA0005E9E1 /* SortOptionType.swift */; };
+		24F8CA1C2E10171C0005E9E1 /* FilterOptionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8CA1B2E1017160005E9E1 /* FilterOptionType.swift */; };
 		891998D89251E4C36DEB714E /* Pods_CryptoTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2C0088F1C5E540CE0DCD24 /* Pods_CryptoTracker.framework */; };
 /* End PBXBuildFile section */
 
@@ -96,6 +98,8 @@
 		24F8CA112E0FDC340005E9E1 /* CoinPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinPrice.swift; sourceTree = "<group>"; };
 		24F8CA142E0FEE650005E9E1 /* CoinCash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinCash.swift; sourceTree = "<group>"; };
 		24F8CA172E0FF8CE0005E9E1 /* CoinCacheWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinCacheWrapper.swift; sourceTree = "<group>"; };
+		24F8CA192E1016EA0005E9E1 /* SortOptionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOptionType.swift; sourceTree = "<group>"; };
+		24F8CA1B2E1017160005E9E1 /* FilterOptionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOptionType.swift; sourceTree = "<group>"; };
 		9D82505E230373A2EBD85E8A /* Pods-CryptoTracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CryptoTracker.release.xcconfig"; path = "Target Support Files/Pods-CryptoTracker/Pods-CryptoTracker.release.xcconfig"; sourceTree = "<group>"; };
 		9F2C0088F1C5E540CE0DCD24 /* Pods_CryptoTracker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CryptoTracker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -214,6 +218,8 @@
 			isa = PBXGroup;
 			children = (
 				24F8CA172E0FF8CE0005E9E1 /* CoinCacheWrapper.swift */,
+				24F8CA192E1016EA0005E9E1 /* SortOptionType.swift */,
+				24F8CA1B2E1017160005E9E1 /* FilterOptionType.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -513,6 +519,8 @@
 				24F8CA072E0F060F0005E9E1 /* AlertType.swift in Sources */,
 				24F8CA0E2E0F18410005E9E1 /* SearchView.swift in Sources */,
 				24F8C9BF2E0EBDD20005E9E1 /* AppContext.swift in Sources */,
+				24F8CA1A2E1016F10005E9E1 /* SortOptionType.swift in Sources */,
+				24F8CA1C2E10171C0005E9E1 /* FilterOptionType.swift in Sources */,
 				24F8C9E12E0ED1FA0005E9E1 /* DashboardRouter.swift in Sources */,
 				24F8C9ED2E0ED6BA0005E9E1 /* HomeBuilder.swift in Sources */,
 				24F8CA182E0FF8CF0005E9E1 /* CoinCacheWrapper.swift in Sources */,

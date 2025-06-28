@@ -2,18 +2,26 @@ import UIKit
 
 enum AlertType {
     case fetchCoinsMarketsError
+    case sort
+    case filter
 
     var title: String? {
         switch self {
-            case .fetchCoinsMarketsError:
+        case .fetchCoinsMarketsError:
             return "Oooops..."
+        case .sort:
+            return "Sort by"
+        case .filter:
+            return "Filter"
         }
     }
 
     var message: String? {
         switch self {
         case .fetchCoinsMarketsError:
-            "Something went wrong while to fetch coins, you can try it again."
+            return "Something went wrong while fetching coins, you can try again."
+        case .sort, .filter:
+            return nil
         }
     }
 
@@ -24,12 +32,31 @@ enum AlertType {
                 .init(title: "Cancel", style: .destructive, result: .bool(false)),
                 .init(title: "Try Again", style: .default, result: .bool(true))
             ]
+
+        case .sort:
+            return [
+                .init(title: "Price ↑", style: .default, result: .sort(.priceAscending)),
+                .init(title: "Price ↓", style: .default, result: .sort(.priceDescending)),
+                .init(title: "Name A-Z", style: .default, result: .sort(.nameAZ)),
+                .init(title: "Name Z-A", style: .default, result: .sort(.nameZA)),
+                .init(title: "Cancel", style: .cancel, result: .cancel)
+            ]
+
+        case .filter:
+            return [
+                .init(title: "Top 100", style: .default, result: .filter(.top10)),
+                .init(title: "Price > $1", style: .default, result: .filter(.priceAbove1)),
+                .init(title: "Clear Filters", style: .destructive, result: .filter(nil)),
+                .init(title: "Cancel", style: .cancel, result: .cancel)
+            ]
         }
     }
 }
 
 enum AlertActionType {
     case bool(Bool)
+    case sort(SortOption)
+    case filter(FilterOption?)
     case cancel
 }
 

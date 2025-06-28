@@ -6,6 +6,8 @@ final class HomeViewController: UIViewController {
 
     // UI
     private let titleLabel = UILabel()
+    private let sortButton = UIButton()
+    private let filterButton = UIButton()
     private let searchView = SearchView()
     private let refreshControl = UIRefreshControl()
     private let tableView = UITableView()
@@ -27,6 +29,8 @@ final class HomeViewController: UIViewController {
     private let didLoad = PassthroughSubject<Void, Never>()
     private let refreshTrigger = PassthroughSubject<Void, Never>()
     private let didReachBottom = PassthroughSubject<Void, Never>()
+    private let sortTrigger = PassthroughSubject<Void, Never>()
+    private let filterTrigger = PassthroughSubject<Void, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -57,7 +61,9 @@ private extension HomeViewController {
             didLoad: didLoad.eraseToAnyPublisher(),
             refreshTrigger: refreshTrigger,
             didReachBottom: didReachBottom.eraseToAnyPublisher(),
-            searchTextDidChangeTrigger: searchView.searchTextDidChangeTrigger.eraseToAnyPublisher()
+            searchTextDidChangeTrigger: searchView.searchTextDidChangeTrigger.eraseToAnyPublisher(),
+            sortTrigger: sortTrigger.eraseToAnyPublisher(),
+            filterTrigger: filterTrigger.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -91,6 +97,8 @@ private extension HomeViewController {
                 self.refreshControl.endRefreshing()
                 self.coinModels = coinModels
                 if coinModels.isEmpty && isKeyboardShown {
+                    self.sortButton.isHidden = true
+                    self.filterButton.isHidden = true
                     self.errorTitleLabel.isHidden = true
                     self.errorSubtitleLabel.isHidden = true
                     self.searchView.isHidden = false
@@ -98,6 +106,8 @@ private extension HomeViewController {
                     self.noCoinsFoundTitleLabel.isHidden = false
                     self.noCoinsFoundSubTitleLabel.isHidden = false
                 } else if coinModels.isEmpty {
+                    self.sortButton.isHidden = true
+                    self.filterButton.isHidden = true
                     self.errorTitleLabel.isHidden = false
                     self.errorSubtitleLabel.isHidden = false
                     self.searchView.isHidden = true
@@ -105,6 +115,8 @@ private extension HomeViewController {
                     self.noCoinsFoundTitleLabel.isHidden = true
                     self.noCoinsFoundSubTitleLabel.isHidden = true
                 } else {
+                    self.sortButton.isHidden = false
+                    self.filterButton.isHidden = false
                     self.errorTitleLabel.isHidden = true
                     self.errorSubtitleLabel.isHidden = true
                     self.searchView.isHidden = false
@@ -122,6 +134,8 @@ private extension HomeViewController {
 private extension HomeViewController {
     func addSubviews() {
         view.addSubview(titleLabel)
+        view.addSubview(sortButton)
+        view.addSubview(filterButton)
         view.addSubview(searchView)
         view.addSubview(tableView)
         view.addSubview(noCoinsFoundTitleLabel)
@@ -134,6 +148,18 @@ private extension HomeViewController {
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
             $0.leading.equalToSuperview().offset(16)
+        }
+
+        filterButton.snp.makeConstraints {
+            $0.size.equalTo(24)
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.centerY.equalTo(titleLabel.snp.centerY)
+        }
+
+        sortButton.snp.makeConstraints {
+            $0.size.equalTo(24)
+            $0.trailing.equalTo(filterButton.snp.leading).offset(-8)
+            $0.centerY.equalTo(filterButton.snp.centerY)
         }
 
         searchView.snp.makeConstraints {
@@ -183,6 +209,30 @@ private extension HomeViewController {
         titleLabel.text = "Crypto Coins"
         titleLabel.font = .systemFont(ofSize: 32, weight: .heavy)
         titleLabel.textColor = .black
+
+        // sortButton
+        sortButton.isHidden = true
+        sortButton.setImage(UIImage(systemName: "arrow.up.arrow.down"), for: .normal)
+        sortButton.setImage(UIImage(systemName: "arrow.up.arrow.down"), for: .highlighted)
+        sortButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let self else {
+                return
+            }
+
+            self.sortTrigger.send()
+        }), for: .touchUpInside)
+
+        // filterButton
+        filterButton.isHidden = true
+        filterButton.setImage(UIImage(systemName: "line.3.horizontal.decrease"), for: .normal)
+        filterButton.setImage(UIImage(systemName: "line.3.horizontal.decrease"), for: .highlighted)
+        filterButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let self else {
+                return
+            }
+
+            self.filterTrigger.send()
+        }), for: .touchUpInside)
 
         // searchView
         searchView.isHidden = true

@@ -4,10 +4,18 @@ import Combine
 extension UIViewController {
     func showAlert(_ type: AlertType) -> AnyPublisher<AlertActionType, Never> {
         Future<AlertActionType, Never> { promise in
+
+            let preferredStyle = switch type {
+            case .sort, .filter:
+                UIAlertController.Style.actionSheet
+            default:
+                UIAlertController.Style.alert
+            }
+
             let alert = UIAlertController(
                 title: type.title,
                 message: type.message,
-                preferredStyle: UIAlertController.Style.alert
+                preferredStyle: preferredStyle
             )
             type.actions.forEach { action in
                 alert.addAction(
