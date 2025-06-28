@@ -1,4 +1,4 @@
-enum SortOption {
+enum SortOptionType {
     case priceAscending
     case priceDescending
     case nameAZ

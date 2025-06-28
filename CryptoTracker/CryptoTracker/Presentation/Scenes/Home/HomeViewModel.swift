@@ -7,16 +7,15 @@ final class HomeViewModel: CombinableViewModel {
     private var isLoadingPage = false
     private var hasMorePages = true
 
-    @Published private var sortOption: SortOption? = nil
-    @Published private var filterOption: FilterOption? = nil
-
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
 
-    init(
-        router: HomeRouter,
-        coinsRepository: CoinsRepository
-    ) {
+    private var currentSortOption: SortOptionType? = nil
+    private var currentFilterOption: FilterOptionType? = nil
+
+    private var allCoins: [CoinModel] = []
+
+    init(router: HomeRouter, coinsRepository: CoinsRepository) {
         self.router = router
         self.coinsRepository = coinsRepository
     }
@@ -31,18 +30,18 @@ extension HomeViewModel {
         let searchTextDidChangeTrigger: AnyPublisher<String, Never>
         let sortTrigger: AnyPublisher<Void, Never>
         let filterTrigger: AnyPublisher<Void, Never>
+        let favoriteAtIndexPathTrigger: AnyPublisher<IndexPath, Never>
     }
 
     final class Output: ObservableObject {
         @Published fileprivate(set) var isLoading = false
-        @Published fileprivate(set) var rawCoinModels: [CoinModel] = []
         @Published fileprivate(set) var coinModels: [CoinModel] = []
     }
 
     func transform(input: Input, cancelBag: CancelBag) -> Output {
         let output = Output()
 
-        // Load & Pagination
+        // Load / Refresh / Pagination
         input.didLoad
             .merge(with: input.refreshTrigger)
             .handleEvents(receiveOutput: { [weak self] _ in
@@ -51,12 +50,11 @@ extension HomeViewModel {
             })
             .merge(with: input.didReachBottom
                 .filter { [weak self] in
-                    guard let self = self else { return false }
+                    guard let self else { return false }
                     return !self.isLoadingPage && self.hasMorePages
-                }
-            )
+                })
             .flatMap { [weak self] in
-                guard let self = self else {
+                guard let self else {
                     return Empty<[CoinModel], Never>().eraseToAnyPublisher()
                 }
 
@@ -64,8 +62,7 @@ extension HomeViewModel {
                 output.isLoading = true
 
                 return self.coinsRepository.fetchCoinsMarkets(page: self.currentPage, perPage: self.perPage)
-                    .retryWhen { [weak self] result, _ in
-                        guard let self = self else { return Just(false).eraseToAnyPublisher() }
+                    .retryWhen { result, _ in
                         switch result {
                         case .success:
                             return Just(false).eraseToAnyPublisher()
@@ -87,137 +84,148 @@ extension HomeViewModel {
                         return Empty<[CoinModel], Never>().eraseToAnyPublisher()
                     }
                     .map { [weak self] newCoins in
-                        guard let self = self else { return [] }
+                        guard let self else { return [] }
 
-                        var _newCoins = newCoins
-                        if _newCoins.isEmpty {
-                            _newCoins = self.coinsRepository.getCachedCoins()
+                        var coins = newCoins
+                        if coins.isEmpty {
+                            coins = self.coinsRepository.getCachedCoins()
                         }
 
-                        if _newCoins.count < self.perPage {
+                        if coins.count < self.perPage {
                             self.hasMorePages = false
                         } else {
                             self.currentPage += 1
                         }
 
-                        if self.currentPage == 2 {
-                            return _newCoins
-                        } else {
-                            return output.rawCoinModels + _newCoins
+                        let newUniqueCoins = coins.filter { newCoin in
+                            !self.allCoins.contains(where: { $0.id == newCoin.id })
                         }
+                        self.allCoins.append(contentsOf: newUniqueCoins)
+
+                        return self.applySortAndFilter(self.allCoins)
                     }
-                    .handleEvents(receiveOutput: { [weak self] _ in
+                    .handleEvents(receiveOutput: { _ in
                         output.isLoading = false
-                        self?.isLoadingPage = false
+                        self.isLoadingPage = false
                     })
                     .eraseToAnyPublisher()
             }
-            .assign(to: \.rawCoinModels, on: output)
+            .receive(on: RunLoop.main)
+            .assign(to: \.coinModels, on: output)
             .store(in: cancelBag)
 
-        // Empty search
+        // Search Empty
         input.searchTextDidChangeTrigger
             .filter { $0.isEmpty }
             .sink { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
 
-                let cached = self.coinsRepository.getCachedCoins()
-                if cached.isEmpty {
+                let cachedCoins = self.coinsRepository.getCachedCoins()
+                if cachedCoins.isEmpty {
                     input.refreshTrigger.send(())
-                } else {
-                    output.rawCoinModels = cached
                 }
+                self.allCoins = cachedCoins
+                output.coinModels = self.applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
-        // Full search
+        // Search Full
         input.searchTextDidChangeTrigger
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
             .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
             .flatMap { [weak self] query -> AnyPublisher<[CoinModel], Never> in
-                guard let self = self else {
-                    return Just<[CoinModel]>([])
-                        .eraseToAnyPublisher()
-                }
-
+                guard let self else { return Just([]).eraseToAnyPublisher() }
                 return self.coinsRepository.search(query: query)
-                    .catch { _ in Just<[CoinModel]>([]) }
+                    .catch { _ in Just([]) }
                     .eraseToAnyPublisher()
             }
             .receive(on: RunLoop.main)
-            .sink { models in
-                output.rawCoinModels = models
+            .sink { [weak self] results in
+                guard let self else { return }
+                output.coinModels = self.applySortAndFilter(results)
             }
             .store(in: cancelBag)
 
         // Sort
         input.sortTrigger
             .flatMap { [weak self] in
-                guard let self = self else { return Empty<AlertActionType, Never>().eraseToAnyPublisher() }
+                guard let self else {
+                    return Empty<AlertActionType, Never>().eraseToAnyPublisher()
+                }
                 return self.router.showAlertOfType(.sort)
             }
             .compactMap {
-                if case let .sort(option) = $0 { return option }
+                if case let .sort(option) = $0 {
+                    return option
+                }
                 return nil
             }
             .sink { [weak self] option in
-                self?.sortOption = option
+                guard let self else { return }
+                self.currentSortOption = option
+                output.coinModels = self.applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
         // Filter
         input.filterTrigger
             .flatMap { [weak self] in
-                guard let self = self else { return Empty<AlertActionType, Never>().eraseToAnyPublisher() }
+                guard let self else {
+                    return Empty<AlertActionType, Never>().eraseToAnyPublisher()
+                }
                 return self.router.showAlertOfType(.filter)
             }
             .compactMap {
-                if case let .filter(option) = $0 { return option }
+                if case let .filter(option) = $0 {
+                    return option
+                }
                 return nil
             }
             .sink { [weak self] option in
-                self?.filterOption = option
+                guard let self else { return }
+                self.currentFilterOption = option
+                output.coinModels = self.applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
-        // Sort/Filter
-        Publishers.CombineLatest3(
-            output.$rawCoinModels,
-            $sortOption,
-            $filterOption
-        )
-        .map { coinModels, sortOption, filterOption in
-            var models = coinModels
-
-            if let filterOption = filterOption {
-                switch filterOption {
-                case .top10:
-                    models = Array(models.prefix(10))
-                case .priceAbove1:
-                    models = models.filter { $0.price > 1 }
-                }
+        input.favoriteAtIndexPathTrigger
+            .sink { indexPath in
+                print("")
             }
-
-            if let sortOption = sortOption {
-                switch sortOption {
-                case .priceAscending:
-                    models.sort { $0.price < $1.price }
-                case .priceDescending:
-                    models.sort { $0.price > $1.price }
-                case .nameAZ:
-                    models.sort { $0.name.lowercased() < $1.name.lowercased() }
-                case .nameZA:
-                    models.sort { $0.name.lowercased() > $1.name.lowercased() }
-                }
-            }
-
-            return models
-        }
-        .receive(on: RunLoop.main)
-        .assign(to: \.coinModels, on: output)
-        .store(in: cancelBag)
+            .store(in: cancelBag)
 
         return output
+    }
+}
+
+// MARK: - Helpers
+private extension HomeViewModel {
+    func applySortAndFilter(_ models: [CoinModel]) -> [CoinModel] {
+        var result = models
+
+        if let filter = currentFilterOption {
+            switch filter {
+            case .top10:
+                result = Array(result.prefix(10))
+            case .priceAbove1:
+                result = result.filter { $0.price > 1 }
+            }
+        }
+
+        if let sort = currentSortOption {
+            switch sort {
+            case .priceAscending:
+                result.sort { $0.price < $1.price }
+            case .priceDescending:
+                result.sort { $0.price > $1.price }
+            case .nameAZ:
+                result.sort { $0.name.lowercased() < $1.name.lowercased() }
+            case .nameZA:
+                result.sort { $0.name.lowercased() > $1.name.lowercased() }
+            }
+        }
+
+        return result
     }
 }

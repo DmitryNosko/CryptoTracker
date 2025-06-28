@@ -2,6 +2,8 @@ import UIKit
 import Kingfisher
 
 final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
+    var favoriteTrigger: (() -> Void)?
+
     // UI
     private let iconContainerView = UIView()
     private let iconImageView = UIImageView()
@@ -123,5 +125,12 @@ private extension CoinTableViewCell {
         // favoriteButton
         favoriteButton.setImage(UIImage(systemName: "star"), for: .normal)
         favoriteButton.setImage(UIImage(systemName: "star"), for: .highlighted)
+        favoriteButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let self else {
+                return
+            }
+
+            self.favoriteTrigger?()
+        }), for: .touchUpInside)
     }
 }

@@ -31,6 +31,7 @@ final class HomeViewController: UIViewController {
     private let didReachBottom = PassthroughSubject<Void, Never>()
     private let sortTrigger = PassthroughSubject<Void, Never>()
     private let filterTrigger = PassthroughSubject<Void, Never>()
+    private let favoriteAtIndexPathTrigger = PassthroughSubject<IndexPath, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -63,7 +64,8 @@ private extension HomeViewController {
             didReachBottom: didReachBottom.eraseToAnyPublisher(),
             searchTextDidChangeTrigger: searchView.searchTextDidChangeTrigger.eraseToAnyPublisher(),
             sortTrigger: sortTrigger.eraseToAnyPublisher(),
-            filterTrigger: filterTrigger.eraseToAnyPublisher()
+            filterTrigger: filterTrigger.eraseToAnyPublisher(),
+            favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -368,6 +370,14 @@ extension HomeViewController: UITableViewDataSource {
 
         let coinModel = coinModels[indexPath.section]
         cell.bind(with: coinModel)
+
+        cell.favoriteTrigger = { [weak self] in
+            guard let self else {
+                return
+            }
+
+            self.favoriteAtIndexPathTrigger.send(indexPath)
+        }
 
         return cell
     }
