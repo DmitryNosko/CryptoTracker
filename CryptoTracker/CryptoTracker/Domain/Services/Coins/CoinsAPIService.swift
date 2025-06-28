@@ -3,6 +3,8 @@ import Combine
 
 protocol CoinsAPIService {
     func fetchCoinsMarkets(page: Int, perPage: Int) -> AnyPublisher<[CoinModelResponse], APIError>
+    func search(query: String) -> AnyPublisher<SearchCoinsResponse, APIError>
+    func fetchPrices(ids: [String]) -> AnyPublisher<CoinPricesResponse, APIError>
 }
 
 final class CoinsAPIServiceImpl: CoinsAPIService {
@@ -15,7 +17,8 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         self.session = session
     }
 
-    func fetchCoinsMarkets(
+    func fetchCoinsMarkets
+    (
         page: Int,
         perPage: Int
     ) -> AnyPublisher<[CoinModelResponse], APIError> {
@@ -46,6 +49,58 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         .decode(type: [CoinModelResponse].self, decoder: JSONDecoder())
         .mapError { error in
             return .fetchCoinsMarkets
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func search(query: String) -> AnyPublisher<SearchCoinsResponse, APIError> {
+        let endpoint = CoinsTargetType.search(query: query)
+        let url = "\(endpoint.baseURL)\(endpoint.path)"
+
+        return session.request(
+            url,
+            method: endpoint.method,
+            parameters: endpoint.parameters,
+            encoding: endpoint.encoding,
+            headers: endpoint.headers
+        )
+        .publishData()
+        .tryMap { result in
+            guard let data = result.data else {
+                throw APIError.searchCoins
+            }
+
+            return data
+        }
+        .decode(type: SearchCoinsResponse.self, decoder: JSONDecoder())
+        .mapError { error in
+            return .searchCoins
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func fetchPrices(ids: [String]) -> AnyPublisher<CoinPricesResponse, APIError> {
+        let endpoint = CoinsTargetType.prices(ids: ids)
+        let url = "\(endpoint.baseURL)\(endpoint.path)"
+
+        return session.request(
+            url,
+            method: endpoint.method,
+            parameters: endpoint.parameters,
+            encoding: endpoint.encoding,
+            headers: endpoint.headers
+        )
+        .publishData()
+        .tryMap { result in
+            guard let data = result.data else {
+                throw APIError.fetchPrices
+            }
+
+            return data
+        }
+        .decode(type: CoinPricesResponse.self, decoder: JSONDecoder())
+        .mapError { error in
+            return .fetchPrices
         }
         .eraseToAnyPublisher()
     }

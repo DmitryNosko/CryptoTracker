@@ -3,26 +3,33 @@ import Alamofire
 
 enum CoinsTargetType {
     case coinsMarkets(page: Int, perPage: Int)
+    case search(query: String)
+    case prices(ids: [String])
 }
 
 extension CoinsTargetType {
     var baseURL: String {
-        switch self {
-        case .coinsMarkets:
-            return AppConstants.API.baseURL
-        }
+        return AppConstants.API.baseURL
     }
 
     var path: String {
         switch self {
         case .coinsMarkets:
             return AppConstants.API.Coins.coinsMarkets
+        case .search:
+            return AppConstants.API.Coins.search
+        case .prices:
+            return AppConstants.API.Coins.prices
         }
     }
 
     var method: HTTPMethod {
         switch self {
         case .coinsMarkets:
+            return .get
+        case .search:
+            return .get
+        case .prices:
             return .get
         }
     }
@@ -40,13 +47,19 @@ extension CoinsTargetType {
                 "per_page": perPage,
                 "page": page
             ]
+        case .search(let query):
+            return [
+                "query": query
+            ]
+        case .prices(let ids):
+            return [
+                "ids": ids.joined(separator: ","),
+                "vs_currencies": "usd"
+            ]
         }
     }
 
     var encoding: ParameterEncoding {
-        switch self {
-        case .coinsMarkets:
-            return URLEncoding.default
-        }
+        URLEncoding.default
     }
 }

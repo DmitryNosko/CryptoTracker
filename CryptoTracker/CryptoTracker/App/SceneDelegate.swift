@@ -32,8 +32,18 @@ private extension SceneDelegate {
             factory: CoinsAPIServiceImpl()
         )
         appContext.registerLazy(
+            CoinCache.self,
+            factory: CoinCacheImpl(
+                filename: AppConstants.Cache.cashJsonName,
+                ttl: AppConstants.Cache.ttl
+            )
+        )
+        appContext.registerLazy(
             CoinsRepository.self,
-            factory: CoinsRepositoryImpl(coinsAPIService: self.appContext.resolve(CoinsAPIService.self))
+            factory: CoinsRepositoryImpl(
+                coinsAPIService: self.appContext.resolve(CoinsAPIService.self),
+                coinCache: self.appContext.resolve(CoinCache.self)
+            )
         )
     }
 }

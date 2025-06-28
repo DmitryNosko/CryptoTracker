@@ -1,7 +1,8 @@
 import Foundation
 
 // MARK: - ViewModel
-struct CoinModel: Equatable {
+struct CoinModel: Codable, Equatable {
+    let id: String
     let name: String
     let symbol: String
     let price: Double
@@ -14,14 +15,16 @@ struct CoinModel: Equatable {
 
 extension CoinModel {
     static let empty: CoinModel = .init(
+        id: String(),
         name: String(),
         symbol: String(),
         price: Double(),
         image: String()
     )
 
-    static func from(response: CoinModelResponse) -> CoinModel {
+    static func fromCoinModel(response: CoinModelResponse) -> CoinModel {
         return CoinModel(
+            id: response.id,
             name: response.name,
             symbol: response.symbol,
             price: response.currentPrice,
@@ -34,7 +37,7 @@ extension CoinModel {
         formatter.numberStyle = .currency
         formatter.currencySymbol = "$"
         formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 2
+        formatter.maximumFractionDigits = 8
         let formatted = formatter.string(from: NSNumber(value: price)) ?? "$0.00"
 
         return "~" + formatted.replacingOccurrences(of: " ", with: "")

@@ -9,10 +9,10 @@ final class HomeViewController: UIViewController {
     private let searchView = SearchView()
     private let refreshControl = UIRefreshControl()
     private let tableView = UITableView()
-    private let emptySearchLabel = UILabel()
-    private let noPlacesFoundLabel = UILabel()
-    private let emptyTitleLabel = UILabel()
-    private let emptyDescriptionLabel = UILabel()
+    private let noCoinsFoundTitleLabel = UILabel()
+    private let noCoinsFoundSubTitleLabel = UILabel()
+    private let errorTitleLabel = UILabel()
+    private let errorSubtitleLabel = UILabel()
     private let activityIndicatorView = UIActivityIndicatorView()
 
     lazy private var tapOnViewGesture = UITapGestureRecognizer(
@@ -55,8 +55,9 @@ private extension HomeViewController {
     func bindViewModel(_ viewModel: HomeViewModel) {
         let input = HomeViewModel.Input(
             didLoad: didLoad.eraseToAnyPublisher(),
-            refreshTrigger: refreshTrigger.eraseToAnyPublisher(),
-            didReachBottom: didReachBottom.eraseToAnyPublisher()
+            refreshTrigger: refreshTrigger,
+            didReachBottom: didReachBottom.eraseToAnyPublisher(),
+            searchTextDidChangeTrigger: searchView.searchTextDidChangeTrigger.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -90,27 +91,27 @@ private extension HomeViewController {
                 self.refreshControl.endRefreshing()
                 self.coinModels = coinModels
                 if coinModels.isEmpty && isKeyboardShown {
-                    self.emptyTitleLabel.isHidden = true
-                    self.emptyDescriptionLabel.isHidden = true
+                    self.errorTitleLabel.isHidden = true
+                    self.errorSubtitleLabel.isHidden = true
                     self.searchView.isHidden = false
                     self.tableView.isHidden = true
-                    self.emptySearchLabel.isHidden = false
-                    self.noPlacesFoundLabel.isHidden = false
+                    self.noCoinsFoundTitleLabel.isHidden = false
+                    self.noCoinsFoundSubTitleLabel.isHidden = false
                 } else if coinModels.isEmpty {
-                    self.emptyTitleLabel.isHidden = false
-                    self.emptyDescriptionLabel.isHidden = false
+                    self.errorTitleLabel.isHidden = false
+                    self.errorSubtitleLabel.isHidden = false
                     self.searchView.isHidden = true
                     self.tableView.isHidden = true
-                    self.emptySearchLabel.isHidden = true
-                    self.noPlacesFoundLabel.isHidden = true
+                    self.noCoinsFoundTitleLabel.isHidden = true
+                    self.noCoinsFoundSubTitleLabel.isHidden = true
                 } else {
-                    self.emptyTitleLabel.isHidden = true
-                    self.emptyDescriptionLabel.isHidden = true
+                    self.errorTitleLabel.isHidden = true
+                    self.errorSubtitleLabel.isHidden = true
                     self.searchView.isHidden = false
                     self.tableView.isHidden = false
                     self.tableView.reloadData()
-                    self.emptySearchLabel.isHidden = true
-                    self.noPlacesFoundLabel.isHidden = true
+                    self.noCoinsFoundTitleLabel.isHidden = true
+                    self.noCoinsFoundSubTitleLabel.isHidden = true
                 }
             }
             .store(in: cancelBag)
@@ -123,10 +124,10 @@ private extension HomeViewController {
         view.addSubview(titleLabel)
         view.addSubview(searchView)
         view.addSubview(tableView)
-        view.addSubview(emptySearchLabel)
-        view.addSubview(noPlacesFoundLabel)
-        view.addSubview(emptyTitleLabel)
-        view.addSubview(emptyDescriptionLabel)
+        view.addSubview(noCoinsFoundTitleLabel)
+        view.addSubview(noCoinsFoundSubTitleLabel)
+        view.addSubview(errorTitleLabel)
+        view.addSubview(errorSubtitleLabel)
     }
 
     func setConstraints() {
@@ -149,26 +150,26 @@ private extension HomeViewController {
             $0.bottom.equalToSuperview().offset(-20)
         }
 
-        emptySearchLabel.snp.makeConstraints {
+        noCoinsFoundTitleLabel.snp.makeConstraints {
             $0.top.equalTo(searchView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
 
-        noPlacesFoundLabel.snp.makeConstraints {
-            $0.top.equalTo(emptySearchLabel.snp.bottom).offset(10)
+        noCoinsFoundSubTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(noCoinsFoundTitleLabel.snp.bottom).offset(10)
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
 
-        emptyTitleLabel.snp.makeConstraints {
+        errorTitleLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
 
-        emptyDescriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(emptyTitleLabel.snp.bottom).offset(10)
+        errorSubtitleLabel.snp.makeConstraints {
+            $0.top.equalTo(errorTitleLabel.snp.bottom).offset(10)
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
@@ -209,36 +210,36 @@ private extension HomeViewController {
         activityIndicatorView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 32)
 
         // emptySearchLabel
-        emptySearchLabel.text = "No Matching Coins"
-        emptySearchLabel.textAlignment = .center
-        emptySearchLabel.textColor = .black
-        emptySearchLabel.font = .systemFont(ofSize: 16, weight: .medium)
-        emptySearchLabel.numberOfLines = 0
-        emptySearchLabel.isHidden = true
+        noCoinsFoundTitleLabel.text = "No Matching Coins"
+        noCoinsFoundTitleLabel.textAlignment = .center
+        noCoinsFoundTitleLabel.textColor = .black
+        noCoinsFoundTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        noCoinsFoundTitleLabel.numberOfLines = 0
+        noCoinsFoundTitleLabel.isHidden = true
 
         // noPlacesFoundLabel
-        noPlacesFoundLabel.text = "Make sure your query is correct or try to find a different coins."
-        noPlacesFoundLabel.textAlignment = .center
-        noPlacesFoundLabel.textColor = .black.withAlphaComponent(0.5)
-        noPlacesFoundLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        noPlacesFoundLabel.numberOfLines = 0
-        noPlacesFoundLabel.isHidden = true
+        noCoinsFoundSubTitleLabel.text = "Make sure your query is correct or try to find a different coins."
+        noCoinsFoundSubTitleLabel.textAlignment = .center
+        noCoinsFoundSubTitleLabel.textColor = .black.withAlphaComponent(0.5)
+        noCoinsFoundSubTitleLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        noCoinsFoundSubTitleLabel.numberOfLines = 0
+        noCoinsFoundSubTitleLabel.isHidden = true
 
         // emptyTitleLabel
-        emptyTitleLabel.text = "Ooopps..."
-        emptyTitleLabel.textAlignment = .center
-        emptyTitleLabel.textColor = .black
-        emptyTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
-        emptyTitleLabel.numberOfLines = 0
-        emptyTitleLabel.isHidden = true
+        errorTitleLabel.text = "Ooopps..."
+        errorTitleLabel.textAlignment = .center
+        errorTitleLabel.textColor = .black
+        errorTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        errorTitleLabel.numberOfLines = 0
+        errorTitleLabel.isHidden = true
 
         // emptyDescriptionLabel
-        emptyDescriptionLabel.text = "Currently no coins found."
-        emptyDescriptionLabel.textAlignment = .center
-        emptyDescriptionLabel.textColor = .black.withAlphaComponent(0.5)
-        emptyDescriptionLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        emptyDescriptionLabel.numberOfLines = 0
-        emptyDescriptionLabel.isHidden = true
+        errorSubtitleLabel.text = "Something went wrong. Please Try Again."
+        errorSubtitleLabel.textAlignment = .center
+        errorSubtitleLabel.textColor = .black.withAlphaComponent(0.5)
+        errorSubtitleLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        errorSubtitleLabel.numberOfLines = 0
+        errorSubtitleLabel.isHidden = true
 
         // activityIndicatorView
         activityIndicatorView.style = .medium
