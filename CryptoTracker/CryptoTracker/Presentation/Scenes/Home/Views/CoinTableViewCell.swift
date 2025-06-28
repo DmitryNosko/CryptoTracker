@@ -72,16 +72,13 @@ private extension CoinTableViewCell {
         iconContainerView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.bottom.equalToSuperview().offset(-16)
-            $0.height.width.equalTo(44)
+            $0.size.equalTo(44)
             $0.leading.equalToSuperview().offset(16)
         }
 
         iconImageView.snp.makeConstraints {
-//            $0.top.equalToSuperview().offset(16)
-//            $0.bottom.equalToSuperview().offset(-16)
             $0.height.width.equalTo(24)
             $0.center.equalToSuperview()
-//            $0.leading.equalToSuperview().offset(16)
         }
 
         nameLabel.snp.makeConstraints {
@@ -106,7 +103,7 @@ private extension CoinTableViewCell {
     func configureViews() {
         // self
         backgroundColor = .white
-        layer.cornerRadius = 24
+        layer.cornerRadius = 12
         layer.borderWidth = 0.7
         layer.borderColor = UIColor.lightGray.cgColor
         selectionStyle = .none

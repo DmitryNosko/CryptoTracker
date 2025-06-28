@@ -35,8 +35,9 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
                 throw APIError.fetchCoinsMarkets
             }
 
+            /// Добавил данный код чтобы не показывать 429 ошибку на UI так как ее получаем если привысить бесплатное количество запросов  за короткий промежуток времени
+            /// {"status":{"error_code":429,"error_message":"You've exceeded the Rate Limit. Please visit https://www.coingecko.com/en/api/pricing to subscribe to our API plans for higher rate limits."}}
             if let json = try? JSONSerialization.jsonObject(with: data, options: []), !(json is [Any]) {
-                debugPrint("🛑 Ignoring invalid response format at page \(page)")
                 return Data("[]".utf8)
             }
 

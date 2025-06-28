@@ -74,11 +74,8 @@ private extension HomeViewController {
                     return
                 }
 
-                if isLoading {
-                    activityIndicatorView.startAnimating()
-                } else {
-                    activityIndicatorView.stopAnimating()
-                }
+                isLoading ? self.activityIndicatorView.startAnimating()
+                          : self.activityIndicatorView.stopAnimating()
             }
             .store(in: cancelBag)
 
@@ -130,7 +127,6 @@ private extension HomeViewController {
         view.addSubview(noPlacesFoundLabel)
         view.addSubview(emptyTitleLabel)
         view.addSubview(emptyDescriptionLabel)
-        view.addSubview(activityIndicatorView)
     }
 
     func setConstraints() {
@@ -176,11 +172,6 @@ private extension HomeViewController {
             $0.leading.equalToSuperview().offset(32)
             $0.trailing.equalToSuperview().offset(-32)
         }
-
-        activityIndicatorView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.height.width.equalTo(44)
-        }
     }
 
     func configureViews() {
@@ -213,8 +204,9 @@ private extension HomeViewController {
         tableView.sectionFooterHeight = 0
         tableView.keyboardDismissMode = .onDrag
         tableView.backgroundColor = .white
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
         tableView.refreshControl = refreshControl
+        tableView.tableFooterView = activityIndicatorView
+        activityIndicatorView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 32)
 
         // emptySearchLabel
         emptySearchLabel.text = "No Matching Coins"
@@ -340,15 +332,13 @@ extension HomeViewController: UITableViewDelegate {
 //        didSelectPlaceTrigger.send(indexPath)
     }
 
-    func scrollViewDidScroll
-    (
-        _ scrollView: UIScrollView
-    ) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
 
-        if offsetY > contentHeight - height * 1.5 {
+        let threshold: CGFloat = 100 
+        if offsetY + height > contentHeight + threshold {
             didReachBottom.send()
         }
     }
