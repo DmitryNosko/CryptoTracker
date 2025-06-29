@@ -20,7 +20,7 @@ final class FavoritesViewController: UIViewController {
     private let didReachBottom = PassthroughSubject<Void, Never>()
 
     // Data
-    private var coinUIModels: [CoinUIModel] = []
+    private var coinModels: [CoinModel] = []
 
     // LifeCycle
     override func viewDidLoad() {
@@ -69,18 +69,18 @@ private extension FavoritesViewController {
             }
             .store(in: cancelBag)
 
-        output.$coinUIModels
+        output.$coinModels
             .dropFirst()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] coinUIModels in
+            .sink { [weak self] coinModels in
                 guard let self else {
                     return
                 }
 
-                print("🧪 VC получил coinUIModels: \(coinUIModels.map(\.id))")
+                print("🧪 VC получил coinUIModels: \(coinModels.map(\.id))")
                 self.refreshControl.endRefreshing()
-                self.coinUIModels = coinUIModels
-                if coinUIModels.isEmpty {
+                self.coinModels = coinModels
+                if coinModels.isEmpty {
                     self.errorTitleLabel.isHidden = false
                     self.errorSubtitleLabel.isHidden = false
                     self.tableView.isHidden = true
@@ -185,7 +185,7 @@ extension FavoritesViewController: UITableViewDataSource {
     (
         in tableView: UITableView
     ) -> Int {
-        return coinUIModels.count
+        return coinModels.count
     }
 
     func tableView
@@ -210,7 +210,7 @@ extension FavoritesViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
-        let coinModel = coinUIModels[indexPath.section]
+        let coinModel = coinModels[indexPath.section]
         cell.bind(with: coinModel)
 
         cell.favoriteTrigger = { [weak self] in

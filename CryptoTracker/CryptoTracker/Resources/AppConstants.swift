@@ -15,4 +15,8 @@ enum AppConstants {
         static let cashJsonName = "coin_cache.json"
         static let ttl: TimeInterval = 3600
     }
+
+    enum FavoriteCoins {
+        static let key = "FavoriteCoins"
+    }
 }

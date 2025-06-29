@@ -46,7 +46,6 @@ enum AlertType {
             return [
                 .init(title: "Top 10", style: .default, result: .filter(.top10)),
                 .init(title: "Price > $1", style: .default, result: .filter(.priceAbove1)),
-                .init(title: "Clear Filters", style: .destructive, result: .filter(nil)),
                 .init(title: "Cancel", style: .cancel, result: .cancel)
             ]
         }

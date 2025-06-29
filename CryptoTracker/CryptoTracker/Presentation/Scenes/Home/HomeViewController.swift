@@ -245,8 +245,8 @@ private extension HomeViewController {
         // tableView
         tableView.backgroundColor = .clear
         tableView.register(
-            CoinTableViewCell.self,
-            forCellReuseIdentifier: CoinTableViewCell.reuseId
+            HomeCoinTableViewCell.self,
+            forCellReuseIdentifier: HomeCoinTableViewCell.reuseId
         )
         tableView.dataSource = self
         tableView.delegate = self
@@ -361,9 +361,9 @@ extension HomeViewController: UITableViewDataSource {
     ) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(
-                withIdentifier: CoinTableViewCell.reuseId,
+                withIdentifier: HomeCoinTableViewCell.reuseId,
                 for: indexPath
-            ) as? CoinTableViewCell
+            ) as? HomeCoinTableViewCell
         else {
             return UITableViewCell()
         }

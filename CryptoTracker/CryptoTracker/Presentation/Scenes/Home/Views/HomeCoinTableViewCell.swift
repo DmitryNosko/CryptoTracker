@@ -45,14 +45,14 @@ final class HomeCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
         favoriteButton.setImage(UIImage(systemName: "star"), for: .highlighted)
     }
 
-    func bind(with model: CoinViewModel) {
+    func bind(with model: CoinModel) {
         iconImageView.kf.setImage(with: model.imageURL)
         iconImageView.kf.indicatorType = .activity
         nameLabel.text = model.name
         priceLabel.text = model.formattedPrice
-        let starImage = model.isFavorite ? "star.fill" : "star"
-        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
-        favoriteButton.setImage(UIImage(systemName: starImage), for: .highlighted)
+//        let starImage = model.isFavorite ? "star.fill" : "star"
+//        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
+//        favoriteButton.setImage(UIImage(systemName: starImage), for: .highlighted)
     }
 
     // Assemble

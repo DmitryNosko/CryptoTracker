@@ -61,7 +61,7 @@ extension HomeViewModel {
                 self.isLoadingPage = true
                 output.isLoading = true
 
-                return self.coinsRepository.fetchCoinsMarkets(page: self.currentPage, perPage: self.perPage)
+                return self.coinsRepository.fetchCoinsMarkets(page: self.currentPage, perPage: self.perPage, ids: nil)
                     .retryWhen { result, _ in
                         switch result {
                         case .success:

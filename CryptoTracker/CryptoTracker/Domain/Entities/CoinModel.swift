@@ -55,8 +55,8 @@ struct CoinModelResponse: Codable, Identifiable {
     let marketCapRank: Int
     let fullyDilutedValuation: Double?
     let totalVolume: Double
-    let high24h: Double
-    let low24h: Double
+    let high24h: Double?
+    let low24h: Double?
     let priceChange24h: Double
     let priceChangePercentage24h: Double
     let marketCapChange24h: Double
