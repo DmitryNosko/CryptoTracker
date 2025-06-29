@@ -12,9 +12,9 @@ final class HomeViewModel: CombinableViewModel {
         }
     }
     private var currentFavoriteIDs: [String] = []
-    @Published private var filteredAndSortedCoins: [CoinModel] = []
     private var currentSortOption: SortOptionType? = nil
     private var currentFilterOption: FilterOptionType? = nil
+    @Published private var filteredAndSortedCoins: [CoinModel] = []
 
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
@@ -47,6 +47,7 @@ extension HomeViewModel {
         let sortTrigger: AnyPublisher<Void, Never>
         let filterTrigger: AnyPublisher<Void, Never>
         let favoriteAtIndexPathTrigger: AnyPublisher<IndexPath, Never>
+        let didSelectCoinAtIndexPath: AnyPublisher<IndexPath, Never>
     }
 
     final class Output: ObservableObject {
@@ -240,6 +241,18 @@ extension HomeViewModel {
                 } else {
                     self.favoritesStore.add(coin)
                 }
+            }
+            .store(in: cancelBag)
+
+        input.didSelectCoinAtIndexPath
+            .withLatestFrom(output.$coinModels)
+            .sink { [weak self] indexPath, coinModels in
+                guard let self else {
+                    return
+                }
+
+                let selectedCoin = coinModels[indexPath.section]
+                self.router.showCoinDetails(selectedCoin)
             }
             .store(in: cancelBag)
 

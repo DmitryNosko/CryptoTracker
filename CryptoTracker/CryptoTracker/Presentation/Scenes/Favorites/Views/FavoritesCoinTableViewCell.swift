@@ -10,19 +10,6 @@ final class FavoritesCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
     private let nameLabel = UILabel()
     private let favoriteButton = UIButton()
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        if selected {
-            UIView.animate(withDuration: 0.1, animations: {
-                self.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
-            }, completion: { finished in
-                UIView.animate(withDuration: 0.1) {
-                    self.transform = .identity
-                }
-            })
-        }
-    }
-
     // Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

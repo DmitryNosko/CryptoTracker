@@ -1,9 +1,9 @@
 import UIKit
 import Combine
 
-protocol FavoritesRouter {}
+protocol CoinDetailsRouter {}
 
-final class FavoritesRouterImpl: FavoritesRouter {
+final class CoinDetailsRouterImpl: CoinDetailsRouter {
     private weak var view: UIViewController?
 
     init

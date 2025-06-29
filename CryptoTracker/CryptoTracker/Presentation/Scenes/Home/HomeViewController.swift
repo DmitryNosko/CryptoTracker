@@ -32,6 +32,7 @@ final class HomeViewController: UIViewController {
     private let sortTrigger = PassthroughSubject<Void, Never>()
     private let filterTrigger = PassthroughSubject<Void, Never>()
     private let favoriteAtIndexPathTrigger = PassthroughSubject<IndexPath, Never>()
+    private let didSelectCoinAtIndexPath = PassthroughSubject<IndexPath, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -65,7 +66,8 @@ private extension HomeViewController {
             searchTextDidChangeTrigger: searchView.searchTextDidChangeTrigger.eraseToAnyPublisher(),
             sortTrigger: sortTrigger.eraseToAnyPublisher(),
             filterTrigger: filterTrigger.eraseToAnyPublisher(),
-            favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher()
+            favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher(),
+            didSelectCoinAtIndexPath: didSelectCoinAtIndexPath.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -390,7 +392,7 @@ extension HomeViewController: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-//        didSelectPlaceTrigger.send(indexPath)
+        didSelectCoinAtIndexPath.send(indexPath)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
