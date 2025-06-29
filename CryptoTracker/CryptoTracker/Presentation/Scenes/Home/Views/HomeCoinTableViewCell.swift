@@ -1,7 +1,7 @@
 import UIKit
 import Kingfisher
 
-final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
+final class HomeCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
     var favoriteTrigger: (() -> Void)?
 
     // UI
@@ -45,11 +45,14 @@ final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
         favoriteButton.setImage(UIImage(systemName: "star"), for: .highlighted)
     }
 
-    func bind(with model: CoinModel) {
+    func bind(with model: CoinViewModel) {
         iconImageView.kf.setImage(with: model.imageURL)
         iconImageView.kf.indicatorType = .activity
         nameLabel.text = model.name
         priceLabel.text = model.formattedPrice
+        let starImage = model.isFavorite ? "star.fill" : "star"
+        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
+        favoriteButton.setImage(UIImage(systemName: starImage), for: .highlighted)
     }
 
     // Assemble
@@ -61,7 +64,7 @@ final class CoinTableViewCell: UITableViewCell, ReuseIdentifiable {
 }
 
 //MARK: - Configure UI
-private extension CoinTableViewCell {
+private extension HomeCoinTableViewCell {
     func addSubviews() {
         contentView.addSubview(iconContainerView)
         iconContainerView.addSubview(iconImageView)

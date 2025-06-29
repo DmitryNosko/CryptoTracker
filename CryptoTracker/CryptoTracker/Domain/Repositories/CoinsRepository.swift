@@ -2,7 +2,7 @@ import Combine
 import UIKit
 
 protocol CoinsRepository {
-    func fetchCoinsMarkets(page: Int, perPage: Int) -> AnyPublisher<[CoinModel], APIError>
+    func fetchCoinsMarkets(page: Int, perPage: Int, ids: [String]?) -> AnyPublisher<[CoinModel], APIError>
     func search(query: String) -> AnyPublisher<[CoinModel], APIError>
     func getCachedCoins() -> [CoinModel]
 }
@@ -23,9 +23,10 @@ final class CoinsRepositoryImpl: CoinsRepository {
     func fetchCoinsMarkets
     (
         page: Int,
-        perPage: Int
+        perPage: Int,
+        ids: [String]?
     ) -> AnyPublisher<[CoinModel], APIError> {
-        coinsAPIService.fetchCoinsMarkets(page: page, perPage: perPage)
+        coinsAPIService.fetchCoinsMarkets(page: page, perPage: perPage, ids: ids)
             .tryMap { coinsModelResponse in
                 let coins = coinsModelResponse.compactMap { CoinModel.fromCoinModel(response: $0) }
                 self.coinCache.save(coins)

@@ -39,6 +39,10 @@ private extension SceneDelegate {
             )
         )
         appContext.registerLazy(
+            FavoritesStore.self,
+            factory: FavoritesStoreImpl(key: AppConstants.FavoriteCoins.key)
+        )
+        appContext.registerLazy(
             CoinsRepository.self,
             factory: CoinsRepositoryImpl(
                 coinsAPIService: self.appContext.resolve(CoinsAPIService.self),

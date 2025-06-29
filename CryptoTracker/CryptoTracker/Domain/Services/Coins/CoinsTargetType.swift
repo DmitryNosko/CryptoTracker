@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 
 enum CoinsTargetType {
-    case coinsMarkets(page: Int, perPage: Int)
+    case coinsMarkets(page: Int, perPage: Int, ids: [String]? = nil)
     case search(query: String)
     case prices(ids: [String])
 }
@@ -40,13 +40,17 @@ extension CoinsTargetType {
 
     var parameters: Parameters? {
         switch self {
-        case .coinsMarkets(let page, let perPage):
-            return [
-                "vs_currency": "usd",
-                "order": "market_cap_desc",
-                "per_page": perPage,
-                "page": page
-            ]
+        case .coinsMarkets(let page, let perPage, let ids):
+                var params: Parameters = [
+                    "vs_currency": "usd",
+                    "order": "market_cap_desc",
+                    "per_page": perPage,
+                    "page": page
+                ]
+                if let ids = ids, !ids.isEmpty {
+                    params["ids"] = ids.joined(separator: ",")
+                }
+                return params
         case .search(let query):
             return [
                 "query": query

@@ -2,7 +2,7 @@ import Alamofire
 import Combine
 
 protocol CoinsAPIService {
-    func fetchCoinsMarkets(page: Int, perPage: Int) -> AnyPublisher<[CoinModelResponse], APIError>
+    func fetchCoinsMarkets(page: Int, perPage: Int, ids: [String]?) -> AnyPublisher<[CoinModelResponse], APIError>
     func search(query: String) -> AnyPublisher<SearchCoinsResponse, APIError>
     func fetchPrices(ids: [String]) -> AnyPublisher<CoinPricesResponse, APIError>
 }
@@ -20,9 +20,10 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
     func fetchCoinsMarkets
     (
         page: Int,
-        perPage: Int
+        perPage: Int,
+        ids: [String]?
     ) -> AnyPublisher<[CoinModelResponse], APIError> {
-        let endpoint = CoinsTargetType.coinsMarkets(page: page, perPage: perPage)
+        let endpoint = CoinsTargetType.coinsMarkets(page: page, perPage: perPage, ids: ids)
         let url = "\(endpoint.baseURL)\(endpoint.path)"
 
         return session.request(
