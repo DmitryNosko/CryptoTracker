@@ -8,7 +8,6 @@ final class FavoritesCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
     private let iconContainerView = UIView()
     private let iconImageView = UIImageView()
     private let nameLabel = UILabel()
-    private let priceLabel = UILabel()
     private let favoriteButton = UIButton()
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -40,7 +39,6 @@ final class FavoritesCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
 
         iconImageView.image = nil
         nameLabel.text = nil
-        priceLabel.text = nil
         favoriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
         favoriteButton.setImage(UIImage(systemName: "star.fill"), for: .highlighted)
     }
@@ -49,7 +47,6 @@ final class FavoritesCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
         iconImageView.kf.setImage(with: model.imageURL)
         iconImageView.kf.indicatorType = .activity
         nameLabel.text = model.name
-        priceLabel.text = model.formattedPrice
     }
 
     // Assemble
@@ -66,7 +63,6 @@ private extension FavoritesCoinTableViewCell {
         contentView.addSubview(iconContainerView)
         iconContainerView.addSubview(iconImageView)
         contentView.addSubview(nameLabel)
-        contentView.addSubview(priceLabel)
         contentView.addSubview(favoriteButton)
     }
 
@@ -84,13 +80,7 @@ private extension FavoritesCoinTableViewCell {
         }
 
         nameLabel.snp.makeConstraints {
-            $0.bottom.equalTo(contentView.snp.centerY)
-            $0.leading.equalTo(iconImageView.snp.trailing).offset(16)
-            $0.trailing.equalToSuperview().offset(-76)
-        }
-
-        priceLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.centerY)
+            $0.centerY.equalTo(contentView.snp.centerY)
             $0.leading.equalTo(iconImageView.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-76)
         }
@@ -117,10 +107,6 @@ private extension FavoritesCoinTableViewCell {
         // nameLabel
         nameLabel.textColor = .black
         nameLabel.font = .systemFont(ofSize: 16)
-
-        // priceLabel
-        priceLabel.textColor = .black.withAlphaComponent(0.8)
-        priceLabel.font = .systemFont(ofSize: 12)
 
         // favoriteButton
         favoriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)

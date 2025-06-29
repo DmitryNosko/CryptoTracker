@@ -19,7 +19,6 @@ final class FavoritesBuilderImpl: FavoritesBuilder {
         let router = FavoritesRouterImpl(view: viewController)
         let viewModel = FavoritesViewModel(
             router: router,
-            coinsRepository: appContext.resolve(CoinsRepository.self),
             favoritesStore: appContext.resolve(FavoritesStore.self)
         )
         viewController.viewModel = viewModel

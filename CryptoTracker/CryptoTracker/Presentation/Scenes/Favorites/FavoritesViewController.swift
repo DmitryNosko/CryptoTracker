@@ -6,18 +6,13 @@ final class FavoritesViewController: UIViewController {
 
     // UI
     private let titleLabel = UILabel()
-    private let refreshControl = UIRefreshControl()
     private let tableView = UITableView()
     private let errorTitleLabel = UILabel()
     private let errorSubtitleLabel = UILabel()
-    private let activityIndicatorView = UIActivityIndicatorView()
 
     // Combine
     private let cancelBag = CancelBag()
-    private let didLoad = PassthroughSubject<Void, Never>()
     private let favoriteAtIndexPathTrigger = PassthroughSubject<IndexPath, Never>()
-    private let refreshTrigger = PassthroughSubject<Void, Never>()
-    private let didReachBottom = PassthroughSubject<Void, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -28,7 +23,6 @@ final class FavoritesViewController: UIViewController {
 
         assemble()
         bindViewModel(viewModel)
-        didLoad.send()
     }
 
     // Assemble
@@ -43,9 +37,6 @@ final class FavoritesViewController: UIViewController {
 private extension FavoritesViewController {
     func bindViewModel(_ viewModel: FavoritesViewModel) {
         let input = FavoritesViewModel.Input(
-            didLoad: didLoad.eraseToAnyPublisher(),
-            refreshTrigger: refreshTrigger.eraseToAnyPublisher(),
-            didReachBottom: didReachBottom.eraseToAnyPublisher(),
             favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher()
         )
 
@@ -57,28 +48,13 @@ private extension FavoritesViewController {
     }
 
     func render(output: FavoritesViewModel.Output) {
-        output.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                guard let self else {
-                    return
-                }
-
-                isLoading ? self.activityIndicatorView.startAnimating()
-                          : self.activityIndicatorView.stopAnimating()
-            }
-            .store(in: cancelBag)
-
         output.$coinModels
-            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] coinModels in
                 guard let self else {
                     return
                 }
 
-                print("🧪 VC получил coinUIModels: \(coinModels.map(\.id))")
-                self.refreshControl.endRefreshing()
                 self.coinModels = coinModels
                 if coinModels.isEmpty {
                     self.errorTitleLabel.isHidden = false
@@ -139,9 +115,6 @@ private extension FavoritesViewController {
         titleLabel.font = .systemFont(ofSize: 32, weight: .heavy)
         titleLabel.textColor = .black
 
-        // refreshControl
-        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
-
         // tableView
         tableView.backgroundColor = .clear
         tableView.register(
@@ -157,9 +130,6 @@ private extension FavoritesViewController {
         tableView.sectionFooterHeight = 0
         tableView.keyboardDismissMode = .onDrag
         tableView.backgroundColor = .white
-        tableView.refreshControl = refreshControl
-        tableView.tableFooterView = activityIndicatorView
-        activityIndicatorView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 32)
 
         // emptyTitleLabel
         errorTitleLabel.text = "No Favorite Coins Yet."
@@ -205,7 +175,8 @@ extension FavoritesViewController: UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: FavoritesCoinTableViewCell.reuseId,
                 for: indexPath
-            ) as? FavoritesCoinTableViewCell
+            ) as? FavoritesCoinTableViewCell,
+            !coinModels.isEmpty
         else {
             return UITableViewCell()
         }
@@ -215,6 +186,12 @@ extension FavoritesViewController: UITableViewDataSource {
 
         cell.favoriteTrigger = { [weak self] in
             guard let self else {
+                return
+            }
+
+            guard
+                indexPath.section >= 0 && indexPath.section < self.coinModels.count
+            else {
                 return
             }
 
@@ -243,22 +220,5 @@ extension FavoritesViewController: UITableViewDelegate {
         heightForHeaderInSection section: Int
     ) -> CGFloat {
         return 12
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-        let contentHeight = scrollView.contentSize.height
-        let height = scrollView.frame.size.height
-
-        let threshold: CGFloat = 100
-        if offsetY + height > contentHeight + threshold {
-            didReachBottom.send()
-        }
-    }
-}
-
-private extension FavoritesViewController {
-    @objc func handleRefresh() {
-        refreshTrigger.send()
     }
 }

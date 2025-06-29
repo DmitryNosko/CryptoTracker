@@ -49,5 +49,13 @@ private extension SceneDelegate {
                 coinCache: self.appContext.resolve(CoinCache.self)
             )
         )
+        appContext.registerLazy(
+            CoinFilteringService.self,
+            factory: CoinFilteringServiceImpl()
+        )
+        appContext.registerLazy(
+            CoinSortingService.self,
+            factory: CoinSortingServiceImpl()
+        )
     }
 }

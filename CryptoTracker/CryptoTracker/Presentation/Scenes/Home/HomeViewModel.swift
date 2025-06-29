@@ -12,24 +12,28 @@ final class HomeViewModel: CombinableViewModel {
         }
     }
     private var currentFavoriteIDs: [String] = []
-
     @Published private var filteredAndSortedCoins: [CoinModel] = []
+    private var currentSortOption: SortOptionType? = nil
+    private var currentFilterOption: FilterOptionType? = nil
 
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
     private let favoritesStore: FavoritesStore
-
-    private var currentSortOption: SortOptionType? = nil
-    private var currentFilterOption: FilterOptionType? = nil
+    private let coinFilteringService: CoinFilteringService
+    private let coinSortingService: CoinSortingService
 
     init(
         router: HomeRouter,
         coinsRepository: CoinsRepository,
-        favoritesStore: FavoritesStore
+        favoritesStore: FavoritesStore,
+        coinFilteringService: CoinFilteringService,
+        coinSortingService: CoinSortingService
     ) {
         self.router = router
         self.coinsRepository = coinsRepository
         self.favoritesStore = favoritesStore
+        self.coinFilteringService = coinFilteringService
+        self.coinSortingService = coinSortingService
     }
 }
 
@@ -57,14 +61,13 @@ extension HomeViewModel {
             .assign(to: \ .coinModels, on: output)
             .store(in: cancelBag)
 
-        favoritesStore.favoriteIDs
-            .sink { [weak self] favoriteIDs in
+        favoritesStore.favoriteCoins
+            .sink { [weak self] favoriteCoins in
                 guard let self else { return }
-                print("❤️ favoritesStore.favoriteIDs updated: \(favoriteIDs)")
-                self.currentFavoriteIDs = favoriteIDs
+                self.currentFavoriteIDs = favoriteCoins.map(\.id)
                 self.allCoins = self.allCoins.map { coin in
                     var updated = coin
-                    updated.isFavorite = favoriteIDs.contains(coin.id)
+                    updated.isFavorite = favoriteCoins.contains(where: { $0.id == coin.id })
                     return updated
                 }
             }
@@ -72,10 +75,6 @@ extension HomeViewModel {
 
         input.didLoad
             .merge(with: input.refreshTrigger)
-            .handleEvents(receiveOutput: { [weak self] _ in
-                self?.currentPage = 1
-                self?.hasMorePages = true
-            })
             .merge(with: input.didReachBottom
                 .filter { [weak self] in
                     guard let self else { return false }
@@ -238,10 +237,8 @@ extension HomeViewModel {
 
                 if self.favoritesStore.isFavorite(coin) {
                     self.favoritesStore.remove(coin)
-                    print("💔 Removed from favorites: \(coin.name)")
                 } else {
                     self.favoritesStore.add(coin)
-                    print("❤️ Added to favorites: \(coin.name)")
                 }
             }
             .store(in: cancelBag)
@@ -256,25 +253,11 @@ private extension HomeViewModel {
         var result = models
 
         if let filter = currentFilterOption {
-            switch filter {
-            case .top10:
-                result = Array(result.prefix(10))
-            case .priceAbove1:
-                result = result.filter { $0.price > 1 }
-            }
+            result = coinFilteringService.filter(result, by: filter)
         }
 
         if let sort = currentSortOption {
-            switch sort {
-            case .priceAscending:
-                result.sort { $0.price < $1.price }
-            case .priceDescending:
-                result.sort { $0.price > $1.price }
-            case .nameAZ:
-                result.sort { $0.name.lowercased() < $1.name.lowercased() }
-            case .nameZA:
-                result.sort { $0.name.lowercased() > $1.name.lowercased() }
-            }
+            result = coinSortingService.sort(result, by: sort)
         }
 
         return result
