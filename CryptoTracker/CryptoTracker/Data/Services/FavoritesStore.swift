@@ -4,7 +4,6 @@ import Combine
 protocol FavoritesStore {
     var favoriteIDs: AnyPublisher<[String], Never> { get }
 
-    func refresh()
     func add(_ coin: CoinModel)
     func remove(_ coin: CoinModel)
     func isFavorite(_ coin: CoinModel) -> Bool
@@ -14,57 +13,63 @@ protocol FavoritesStore {
 final class FavoritesStoreImpl: FavoritesStore {
     private let key: String
     private let userDefaults: UserDefaults
+    private let favoriteIDsSubject: CurrentValueSubject<[String], Never>
 
-    init
-    (
-        key: String,
-        userDefaults: UserDefaults = .standard
-    ) {
+    init(key: String, userDefaults: UserDefaults = .standard) {
         self.key = key
         self.userDefaults = userDefaults
+
+        let stored = userDefaults.stringArray(forKey: key) ?? []
+        self.favoriteIDsSubject = CurrentValueSubject(stored)
+
+        print("[FavoritesStore] Initialized with \(stored.count) items")
     }
 
-    private let favoriteIDsSubject = CurrentValueSubject<[String], Never>([])
-    private(set) lazy var favoriteIDs: AnyPublisher<[String], Never> = {
-        favoriteIDsSubject.eraseToAnyPublisher()
-    }()
-
-    func refresh() {
-        let favoriteIDs = allFavorites()
-        favoriteIDsSubject.send(favoriteIDs)
+    var favoriteIDs: AnyPublisher<[String], Never> {
+        favoriteIDsSubject
+            .handleEvents(receiveOutput: { ids in
+                print("[FavoritesStore] Emitting favoriteIDs: \(ids)")
+            })
+            .eraseToAnyPublisher()
     }
 
     func add(_ coin: CoinModel) {
-        var favorites = allFavorites()
-        guard
-            !favorites.contains(coin.id) else {
+        var current = favoriteIDsSubject.value
+        guard !current.contains(coin.id) else {
+            print("[FavoritesStore] Attempted to add \(coin.id), but it's already a favorite")
             return
         }
 
-        favorites.append(coin.id)
-        save(favorites)
+        current.append(coin.id)
+        print("[FavoritesStore] Added \(coin.id) to favorites")
+        save(current)
     }
 
     func remove(_ coin: CoinModel) {
-        let currentFavorites = allFavorites()
-        let updated = currentFavorites.filter { $0 != coin.id }
-
+        let updated = favoriteIDsSubject.value.filter { $0 != coin.id }
+        if updated.count == favoriteIDsSubject.value.count {
+            print("[FavoritesStore] Attempted to remove \(coin.id), but it wasn't in favorites")
+        } else {
+            print("[FavoritesStore] Removed \(coin.id) from favorites")
+        }
         save(updated)
     }
 
     func isFavorite(_ coin: CoinModel) -> Bool {
-        return allFavorites().contains(coin.id)
+        let result = favoriteIDsSubject.value.contains(coin.id)
+        print("[FavoritesStore] isFavorite(\(coin.id)) -> \(result)")
+        return result
     }
 
     func allFavorites() -> [String] {
-        let value = userDefaults.stringArray(forKey: key) ?? []
-        return value
+        let current = favoriteIDsSubject.value
+        print("[FavoritesStore] allFavorites() -> \(current.count) items")
+        return current
     }
-}
 
-private extension FavoritesStoreImpl {
-    func save(_ ids: [String]) {
+    private func save(_ ids: [String]) {
+        favoriteIDsSubject.send(ids)
         userDefaults.set(ids, forKey: key)
-        refresh()
+        print("[FavoritesStore] Saved \(ids.count) favorites to UserDefaults")
     }
 }

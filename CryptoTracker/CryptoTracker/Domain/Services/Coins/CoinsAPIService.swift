@@ -49,6 +49,7 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         }
         .decode(type: [CoinModelResponse].self, decoder: JSONDecoder())
         .mapError { error in
+            debugPrint("🛑 fetchCoinsMarkets error = \(error)")
             return .fetchCoinsMarkets
         }
         .eraseToAnyPublisher()
@@ -75,6 +76,7 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         }
         .decode(type: SearchCoinsResponse.self, decoder: JSONDecoder())
         .mapError { error in
+            debugPrint("🛑 search(query) error = \(error)")
             return .searchCoins
         }
         .eraseToAnyPublisher()
@@ -101,6 +103,7 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         }
         .decode(type: CoinPricesResponse.self, decoder: JSONDecoder())
         .mapError { error in
+            debugPrint("🛑 fetchPrices error = \(error)")
             return .fetchPrices
         }
         .eraseToAnyPublisher()

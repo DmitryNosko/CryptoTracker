@@ -6,18 +6,30 @@ final class HomeViewModel: CombinableViewModel {
     private let perPage = 25
     private var isLoadingPage = false
     private var hasMorePages = true
+    private var allCoins: [CoinModel] = [] {
+        didSet {
+            updateFilteredAndSortedCoins()
+        }
+    }
+    private var currentFavoriteIDs: [String] = []
+
+    @Published private var filteredAndSortedCoins: [CoinModel] = []
 
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
+    private let favoritesStore: FavoritesStore
 
     private var currentSortOption: SortOptionType? = nil
     private var currentFilterOption: FilterOptionType? = nil
 
-    private var allCoins: [CoinModel] = []
-
-    init(router: HomeRouter, coinsRepository: CoinsRepository) {
+    init(
+        router: HomeRouter,
+        coinsRepository: CoinsRepository,
+        favoritesStore: FavoritesStore
+    ) {
         self.router = router
         self.coinsRepository = coinsRepository
+        self.favoritesStore = favoritesStore
     }
 }
 
@@ -41,7 +53,23 @@ extension HomeViewModel {
     func transform(input: Input, cancelBag: CancelBag) -> Output {
         let output = Output()
 
-        // Load / Refresh / Pagination
+        $filteredAndSortedCoins
+            .assign(to: \ .coinModels, on: output)
+            .store(in: cancelBag)
+
+        favoritesStore.favoriteIDs
+            .sink { [weak self] favoriteIDs in
+                guard let self else { return }
+                print("❤️ favoritesStore.favoriteIDs updated: \(favoriteIDs)")
+                self.currentFavoriteIDs = favoriteIDs
+                self.allCoins = self.allCoins.map { coin in
+                    var updated = coin
+                    updated.isFavorite = favoriteIDs.contains(coin.id)
+                    return updated
+                }
+            }
+            .store(in: cancelBag)
+
         input.didLoad
             .merge(with: input.refreshTrigger)
             .handleEvents(receiveOutput: { [weak self] _ in
@@ -62,7 +90,11 @@ extension HomeViewModel {
                 output.isLoading = true
 
                 return self.coinsRepository.fetchCoinsMarkets(page: self.currentPage, perPage: self.perPage, ids: nil)
-                    .retryWhen { result, _ in
+                    .retryWhen { [weak self] result, _ in
+                        guard let self else {
+                            return Just(false).eraseToAnyPublisher()
+                        }
+
                         switch result {
                         case .success:
                             return Just(false).eraseToAnyPublisher()
@@ -100,36 +132,38 @@ extension HomeViewModel {
                         let newUniqueCoins = coins.filter { newCoin in
                             !self.allCoins.contains(where: { $0.id == newCoin.id })
                         }
-                        self.allCoins.append(contentsOf: newUniqueCoins)
-
-                        return self.applySortAndFilter(self.allCoins)
+                        return newUniqueCoins
                     }
-                    .handleEvents(receiveOutput: { _ in
-                        output.isLoading = false
+                    .handleEvents(receiveOutput: { [weak self] newCoins in
+                        guard let self else { return }
                         self.isLoadingPage = false
+                        output.isLoading = false
+                        let updatedCoins = self.updateFavorites(in: newCoins)
+                        self.allCoins.append(contentsOf: updatedCoins)
                     })
                     .eraseToAnyPublisher()
             }
-            .receive(on: RunLoop.main)
-            .assign(to: \.coinModels, on: output)
+            .sink { _ in }
             .store(in: cancelBag)
 
-        // Search Empty
         input.searchTextDidChangeTrigger
             .filter { $0.isEmpty }
             .sink { [weak self] _ in
-                guard let self else { return }
+                guard let self else {
+                    return
+                }
 
                 let cachedCoins = self.coinsRepository.getCachedCoins()
                 if cachedCoins.isEmpty {
                     input.refreshTrigger.send(())
                 }
-                self.allCoins = cachedCoins
-                output.coinModels = self.applySortAndFilter(self.allCoins)
+
+                let updatedCoins = self.updateFavorites(in: cachedCoins)
+                self.allCoins = updatedCoins
             }
             .store(in: cancelBag)
 
-        // Search Full
+
         input.searchTextDidChangeTrigger
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
@@ -140,14 +174,16 @@ extension HomeViewModel {
                     .catch { _ in Just([]) }
                     .eraseToAnyPublisher()
             }
-            .receive(on: RunLoop.main)
             .sink { [weak self] results in
-                guard let self else { return }
-                output.coinModels = self.applySortAndFilter(results)
+                guard let self else {
+                    return
+                }
+
+                let updatedResults = self.updateFavorites(in: results)
+                self.allCoins = updatedResults
             }
             .store(in: cancelBag)
 
-        // Sort
         input.sortTrigger
             .flatMap { [weak self] in
                 guard let self else {
@@ -164,11 +200,10 @@ extension HomeViewModel {
             .sink { [weak self] option in
                 guard let self else { return }
                 self.currentSortOption = option
-                output.coinModels = self.applySortAndFilter(self.allCoins)
+                self.updateFilteredAndSortedCoins()
             }
             .store(in: cancelBag)
 
-        // Filter
         input.filterTrigger
             .flatMap { [weak self] in
                 guard let self else {
@@ -185,13 +220,29 @@ extension HomeViewModel {
             .sink { [weak self] option in
                 guard let self else { return }
                 self.currentFilterOption = option
-                output.coinModels = self.applySortAndFilter(self.allCoins)
+                self.updateFilteredAndSortedCoins()
             }
             .store(in: cancelBag)
 
         input.favoriteAtIndexPathTrigger
-            .sink { indexPath in
-                print("")
+            .withLatestFrom($filteredAndSortedCoins)
+            .sink { [weak self] indexPath, coinModels in
+                guard
+                    let self,
+                    coinModels.indices.contains(indexPath.section)
+                else {
+                    return
+                }
+
+                let coin = coinModels[indexPath.section]
+
+                if self.favoritesStore.isFavorite(coin) {
+                    self.favoritesStore.remove(coin)
+                    print("💔 Removed from favorites: \(coin.name)")
+                } else {
+                    self.favoritesStore.add(coin)
+                    print("❤️ Added to favorites: \(coin.name)")
+                }
             }
             .store(in: cancelBag)
 
@@ -227,5 +278,17 @@ private extension HomeViewModel {
         }
 
         return result
+    }
+
+    func updateFilteredAndSortedCoins() {
+        self.filteredAndSortedCoins = applySortAndFilter(allCoins)
+    }
+
+    private func updateFavorites(in coins: [CoinModel]) -> [CoinModel] {
+        return coins.map { coin in
+            var updated = coin
+            updated.isFavorite = currentFavoriteIDs.contains(coin.id)
+            return updated
+        }
     }
 }

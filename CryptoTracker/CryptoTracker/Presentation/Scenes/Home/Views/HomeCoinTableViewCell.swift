@@ -50,9 +50,9 @@ final class HomeCoinTableViewCell: UITableViewCell, ReuseIdentifiable {
         iconImageView.kf.indicatorType = .activity
         nameLabel.text = model.name
         priceLabel.text = model.formattedPrice
-//        let starImage = model.isFavorite ? "star.fill" : "star"
-//        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
-//        favoriteButton.setImage(UIImage(systemName: starImage), for: .highlighted)
+        let starImage = model.isFavorite ? "star.fill" : "star"
+        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
+        favoriteButton.setImage(UIImage(systemName: starImage), for: .highlighted)
     }
 
     // Assemble

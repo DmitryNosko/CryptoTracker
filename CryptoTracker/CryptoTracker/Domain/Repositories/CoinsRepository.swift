@@ -66,7 +66,8 @@ final class CoinsRepositoryImpl: CoinsRepository {
                                 name: coin.name,
                                 symbol: coin.symbol,
                                 price: price,
-                                image: coin.thumb
+                                image: coin.thumb,
+                                isFavorite: false
                             )
                         }
                     }

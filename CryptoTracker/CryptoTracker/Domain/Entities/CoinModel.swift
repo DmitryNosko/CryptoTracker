@@ -7,6 +7,7 @@ struct CoinModel: Codable, Equatable {
     let symbol: String
     let price: Double
     let image: String
+    var isFavorite: Bool
 
     var imageURL: URL? {
         URL(string: image)
@@ -19,7 +20,8 @@ extension CoinModel {
         name: String(),
         symbol: String(),
         price: Double(),
-        image: String()
+        image: String(),
+        isFavorite: Bool()
     )
 
     static func fromCoinModel(response: CoinModelResponse) -> CoinModel {
@@ -28,7 +30,8 @@ extension CoinModel {
             name: response.name,
             symbol: response.symbol,
             price: response.currentPrice,
-            image: response.image
+            image: response.image,
+            isFavorite: false
         )
     }
 

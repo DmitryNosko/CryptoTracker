@@ -19,7 +19,8 @@ final class HomeBuilderImpl: HomeBuilder {
         let router = HomeRouterImpl(view: viewController)
         let viewModel = HomeViewModel(
             router: router,
-            coinsRepository: appContext.resolve(CoinsRepository.self)
+            coinsRepository: appContext.resolve(CoinsRepository.self),
+            favoritesStore: appContext.resolve(FavoritesStore.self)
         )
         viewController.viewModel = viewModel
 

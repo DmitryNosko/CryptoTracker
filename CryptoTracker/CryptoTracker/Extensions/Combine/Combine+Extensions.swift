@@ -47,7 +47,10 @@ where Downstream.Input == Upstream.Output, Downstream.Failure == Upstream.Failur
 
     private func startRequest() {
         let publisher = upstream.handleEvents(receiveCompletion: { [weak self] completion in
-            guard let self = self else { return }
+            guard let self else {
+                return
+            }
+
             switch completion {
             case .finished:
                 break
@@ -68,7 +71,11 @@ where Downstream.Input == Upstream.Output, Downstream.Failure == Upstream.Failur
         let shouldRetryPublisher = predicate(result, retryCount)
 
         cancellable = shouldRetryPublisher.sink { [weak self] shouldRetry in
-            guard let self = self else { return }
+            guard let self else {
+                return
+            }
+            defer { self.cancellable = nil }
+
             if shouldRetry {
                 self.startRequest()
             } else {
@@ -112,6 +119,10 @@ where Downstream.Input == Upstream.Output, Downstream.Failure == Upstream.Failur
         func receive(completion: Subscribers.Completion<Downstream.Failure>) {
             parent.downstream?.receive(completion: completion)
         }
+    }
+
+    deinit {
+        print("RetryWhenSubscriber deallocated")
     }
 }
 
