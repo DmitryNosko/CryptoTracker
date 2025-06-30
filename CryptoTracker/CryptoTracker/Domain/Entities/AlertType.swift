@@ -2,12 +2,15 @@ import UIKit
 
 enum AlertType {
     case fetchCoinsMarketsError
+    case fetchCoinsPriceHistory
     case sort
     case filter
 
     var title: String? {
         switch self {
         case .fetchCoinsMarketsError:
+            return "Oooops..."
+        case .fetchCoinsPriceHistory:
             return "Oooops..."
         case .sort:
             return "Sort by"
@@ -20,6 +23,8 @@ enum AlertType {
         switch self {
         case .fetchCoinsMarketsError:
             return "Something went wrong while fetching coins, you can try again."
+        case .fetchCoinsPriceHistory:
+            return "Something went wrong while fetching coins price history, you can try again."
         case .sort, .filter:
             return nil
         }
@@ -32,7 +37,11 @@ enum AlertType {
                 .init(title: "Cancel", style: .destructive, result: .bool(false)),
                 .init(title: "Try Again", style: .default, result: .bool(true))
             ]
-
+        case .fetchCoinsPriceHistory:
+            return [
+                .init(title: "Cancel", style: .destructive, result: .bool(false)),
+                .init(title: "Try Again", style: .default, result: .bool(true))
+            ]
         case .sort:
             return [
                 .init(title: "Price ↑", style: .default, result: .sort(.priceAscending)),

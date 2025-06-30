@@ -88,7 +88,7 @@ extension CoinDetailsViewModel {
                             return Just(false).eraseToAnyPublisher()
                         case .failure:
                             output.isLoadingPriceHistory = false
-                            return self.router.showAlertOfType(.fetchCoinsMarketsError)
+                            return self.router.showAlertOfType(.fetchCoinsPriceHistory)
                                 .map { actionType in
                                     if case .bool(let shouldRetry) = actionType, shouldRetry {
                                         output.isLoadingPriceHistory = true

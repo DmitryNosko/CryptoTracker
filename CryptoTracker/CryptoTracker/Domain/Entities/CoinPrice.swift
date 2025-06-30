@@ -1,12 +1,9 @@
 import Foundation
 
-// MARK: - Response Model
-typealias CoinPricesResponse = [String: CoinPrice]
-
+// MARK: - ViewModel
 struct CoinPrice: Decodable {
     let usd: Double?
-    
-    // Для истории цен
+
     let timestamp: Double?
     let price: Double?
     
@@ -21,8 +18,7 @@ struct CoinPrice: Decodable {
         self.price = price
         self.usd = nil
     }
-    
-    // Decodable инициализатор для API ответов
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.usd = try container.decodeIfPresent(Double.self, forKey: .usd)
@@ -35,7 +31,9 @@ struct CoinPrice: Decodable {
     }
 }
 
-// MARK: - Price History Response
+// MARK: - Response Model
+typealias CoinPricesResponse = [String: CoinPrice]
+
 struct CoinPriceHistoryResponse: Decodable {
     let prices: [[Double]]
     let marketCaps: [[Double]]

@@ -6,15 +6,10 @@ final class HomeViewModel: CombinableViewModel {
     private let perPage = 25
     private var isLoadingPage = false
     private var hasMorePages = true
-    private var allCoins: [CoinModel] = [] {
-        didSet {
-            updateFilteredAndSortedCoins()
-        }
-    }
+    private var allCoins: [CoinModel] = []
     private var currentFavoriteIDs: [String] = []
     private var currentSortOption: SortOptionType? = nil
     private var currentFilterOption: FilterOptionType? = nil
-    @Published private var filteredAndSortedCoins: [CoinModel] = []
 
     private let router: HomeRouter
     private let coinsRepository: CoinsRepository
@@ -64,10 +59,6 @@ extension HomeViewModel {
     func transform(input: Input, cancelBag: CancelBag) -> Output {
         let output = Output()
 
-        $filteredAndSortedCoins
-            .assign(to: \ .coinModels, on: output)
-            .store(in: cancelBag)
-
         favoritesStore.favoriteCoins
             .sink { [weak self] favoriteCoins in
                 guard let self else { return }
@@ -77,6 +68,7 @@ extension HomeViewModel {
                     updated.isFavorite = favoriteCoins.contains(where: { $0.id == coin.id })
                     return updated
                 }
+                output.coinModels = applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
@@ -162,8 +154,8 @@ extension HomeViewModel {
                         guard let self else { return }
                         self.isLoadingPage = false
                         output.isLoading = false
-                        let updatedCoins = self.updateFavorites(in: newCoins)
-                        self.allCoins.append(contentsOf: updatedCoins)
+                        self.allCoins.append(contentsOf:  self.updateFavorites(in: newCoins))
+                        output.coinModels = applySortAndFilter(self.allCoins)
                     })
                     .eraseToAnyPublisher()
             }
@@ -182,8 +174,8 @@ extension HomeViewModel {
                     input.refreshTrigger.send(())
                 }
 
-                let updatedCoins = self.updateFavorites(in: cachedCoins)
-                self.allCoins = updatedCoins
+                self.allCoins = self.updateFavorites(in: cachedCoins)
+                output.coinModels = applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
@@ -203,8 +195,8 @@ extension HomeViewModel {
                     return
                 }
 
-                let updatedResults = self.updateFavorites(in: results)
-                self.allCoins = updatedResults
+                self.allCoins = self.updateFavorites(in: results)
+                output.coinModels = applySortAndFilter(self.allCoins)
             }
             .store(in: cancelBag)
 
@@ -224,7 +216,7 @@ extension HomeViewModel {
             .sink { [weak self] option in
                 guard let self else { return }
                 self.currentSortOption = option
-                self.updateFilteredAndSortedCoins()
+                output.coinModels = applySortAndFilter(allCoins)
             }
             .store(in: cancelBag)
 
@@ -244,12 +236,12 @@ extension HomeViewModel {
             .sink { [weak self] option in
                 guard let self else { return }
                 self.currentFilterOption = option
-                self.updateFilteredAndSortedCoins()
+                output.coinModels = applySortAndFilter(allCoins)
             }
             .store(in: cancelBag)
 
         input.favoriteAtIndexPathTrigger
-            .withLatestFrom($filteredAndSortedCoins)
+            .withLatestFrom(output.$coinModels)
             .sink { [weak self] indexPath, coinModels in
                 guard
                     let self,
@@ -300,11 +292,7 @@ private extension HomeViewModel {
         return result
     }
 
-    func updateFilteredAndSortedCoins() {
-        self.filteredAndSortedCoins = applySortAndFilter(allCoins)
-    }
-
-    private func updateFavorites(in coins: [CoinModel]) -> [CoinModel] {
+    func updateFavorites(in coins: [CoinModel]) -> [CoinModel] {
         return coins.map { coin in
             var updated = coin
             updated.isFavorite = currentFavoriteIDs.contains(coin.id)
