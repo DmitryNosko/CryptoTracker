@@ -23,7 +23,7 @@ final class PriceAlertServiceImpl: PriceAlertService {
         return Just(())
             .map { [weak self] in
                 guard let self = self else { return }
-                
+                // на данном этапе чтобы просто показать работу беру первый из массива, в конечном итоге можно улучшать и делать кастомное поведение какое только пожелаем
                 if let firstCoin = coins.first {
                     let priceChange = firstCoin.priceChangePercentage24h ?? 0
                     if abs(priceChange) >= self.significantChangeThreshold {
