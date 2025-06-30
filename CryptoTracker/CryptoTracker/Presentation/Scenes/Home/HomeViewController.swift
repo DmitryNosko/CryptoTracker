@@ -81,12 +81,8 @@ private extension HomeViewController {
         output.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
-                guard let self else {
-                    return
-                }
-
-                isLoading ? self.activityIndicatorView.startAnimating()
-                          : self.activityIndicatorView.stopAnimating()
+                isLoading ? self?.activityIndicatorView.startAnimating()
+                          : self?.activityIndicatorView.stopAnimating()
             }
             .store(in: cancelBag)
 
@@ -167,7 +163,6 @@ private extension HomeViewController {
         }
 
         searchView.snp.makeConstraints {
-            $0.height.equalTo(44)
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)

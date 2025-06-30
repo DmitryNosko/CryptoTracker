@@ -19,6 +19,7 @@ final class FavoritesViewModel: CombinableViewModel {
 extension FavoritesViewModel {
     struct Input {
         let favoriteAtIndexPathTrigger: AnyPublisher<IndexPath, Never>
+        let didSelectCoinAtIndexPath: AnyPublisher<IndexPath, Never>
     }
 
     final class Output: ObservableObject {
@@ -58,6 +59,18 @@ extension FavoritesViewModel {
                 } else {
                     self.favoritesStore.add(coin)
                 }
+            }
+            .store(in: cancelBag)
+            
+        input.didSelectCoinAtIndexPath
+            .withLatestFrom(output.$coinModels)
+            .sink { [weak self] indexPath, coinModels in
+                guard let self else {
+                    return
+                }
+
+                let selectedCoin = coinModels[indexPath.section]
+                self.router.showCoinDetails(selectedCoin)
             }
             .store(in: cancelBag)
 

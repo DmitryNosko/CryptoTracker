@@ -5,6 +5,7 @@ protocol CoinsAPIService {
     func fetchCoinsMarkets(page: Int, perPage: Int, ids: [String]?) -> AnyPublisher<[CoinModelResponse], APIError>
     func search(query: String) -> AnyPublisher<SearchCoinsResponse, APIError>
     func fetchPrices(ids: [String]) -> AnyPublisher<CoinPricesResponse, APIError>
+    func fetchCoinPriceHistory(coinId: String, timeRange: TimeRangeType) -> AnyPublisher<CoinPriceHistoryResponse, APIError>
 }
 
 final class CoinsAPIServiceImpl: CoinsAPIService {
@@ -76,7 +77,7 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         }
         .decode(type: SearchCoinsResponse.self, decoder: JSONDecoder())
         .mapError { error in
-            debugPrint("🛑 search(query) error = \(error)")
+            debugPrint("🛑 search(query: \(query) error = \(error)")
             return .searchCoins
         }
         .eraseToAnyPublisher()
@@ -105,6 +106,33 @@ final class CoinsAPIServiceImpl: CoinsAPIService {
         .mapError { error in
             debugPrint("🛑 fetchPrices error = \(error)")
             return .fetchPrices
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func fetchCoinPriceHistory(coinId: String, timeRange: TimeRangeType) -> AnyPublisher<CoinPriceHistoryResponse, APIError> {
+        let endpoint = CoinsTargetType.priceHistory(coinId: coinId, timeRange: timeRange)
+        let url = "\(endpoint.baseURL)\(endpoint.path)"
+
+        return session.request(
+            url,
+            method: endpoint.method,
+            parameters: endpoint.parameters,
+            encoding: endpoint.encoding,
+            headers: endpoint.headers
+        )
+        .publishData()
+        .tryMap { result in
+            guard let data = result.data else {
+                throw APIError.fetchCoinPriceHistory
+            }
+
+            return data
+        }
+        .decode(type: CoinPriceHistoryResponse.self, decoder: JSONDecoder())
+        .mapError { error in
+            debugPrint("🛑 fetchCoinPriceHistory error = \(error)")
+            return .fetchCoinPriceHistory
         }
         .eraseToAnyPublisher()
     }

@@ -5,6 +5,7 @@ protocol CoinsRepository {
     func fetchCoinsMarkets(page: Int, perPage: Int, ids: [String]?) -> AnyPublisher<[CoinModel], APIError>
     func search(query: String) -> AnyPublisher<[CoinModel], APIError>
     func getCachedCoins() -> [CoinModel]
+    func fetchCoinPriceHistory(coinId: String, timeRange: TimeRangeType) -> AnyPublisher<[CoinPrice], APIError>
 }
 
 final class CoinsRepositoryImpl: CoinsRepository {
@@ -39,14 +40,7 @@ final class CoinsRepositoryImpl: CoinsRepository {
             .eraseToAnyPublisher()
     }
 
-    func getCachedCoins() -> [CoinModel] {
-        return coinCache.load()
-    }
-
-    func search
-    (
-        query: String
-    ) -> AnyPublisher<[CoinModel], APIError> {
+    func search(query: String) -> AnyPublisher<[CoinModel], APIError> {
         coinsAPIService.search(query: query)
             .flatMap { [weak self] searchCoinsResponse -> AnyPublisher<[CoinModel], APIError> in
                 guard let self else {
@@ -58,8 +52,8 @@ final class CoinsRepositoryImpl: CoinsRepository {
                 let ids = coins.map { $0.id }
 
                 return self.coinsAPIService.fetchPrices(ids: ids)
-                    .map { pricesResponse in
-                        coins.map { coin in
+                    .tryMap { pricesResponse in
+                        return coins.map { coin in
                             let price = pricesResponse[coin.id]?.usd ?? 0.0
                             return CoinModel(
                                 id: coin.id,
@@ -71,10 +65,28 @@ final class CoinsRepositoryImpl: CoinsRepository {
                             )
                         }
                     }
-                    .mapError { _ in
-                        APIError.fetchCoinsMarkets
-                    }
+                    .mapError { _ in APIError.fetchCoinsMarkets }
                     .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func getCachedCoins() -> [CoinModel] {
+        return coinCache.load()
+    }
+
+    func fetchCoinPriceHistory(coinId: String, timeRange: TimeRangeType) -> AnyPublisher<[CoinPrice], APIError> {
+        return coinsAPIService.fetchCoinPriceHistory(coinId: coinId, timeRange: timeRange)
+            .tryMap { response in
+                return response.prices.map { priceData in
+                    CoinPrice(
+                        timestamp: priceData[0],
+                        price: priceData[1]
+                    )
+                }
+            }
+            .mapError { _ in
+                return APIError.fetchCoinPriceHistory
             }
             .eraseToAnyPublisher()
     }

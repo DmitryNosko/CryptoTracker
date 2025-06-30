@@ -5,6 +5,7 @@ enum CoinsTargetType {
     case coinsMarkets(page: Int, perPage: Int, ids: [String]? = nil)
     case search(query: String)
     case prices(ids: [String])
+    case priceHistory(coinId: String, timeRange: TimeRangeType)
 }
 
 extension CoinsTargetType {
@@ -20,6 +21,8 @@ extension CoinsTargetType {
             return AppConstants.API.Coins.search
         case .prices:
             return AppConstants.API.Coins.prices
+        case .priceHistory(let coinId, _):
+            return "/coins/\(coinId)/market_chart"
         }
     }
 
@@ -30,6 +33,8 @@ extension CoinsTargetType {
         case .search:
             return .get
         case .prices:
+            return .get
+        case .priceHistory:
             return .get
         }
     }
@@ -59,6 +64,11 @@ extension CoinsTargetType {
             return [
                 "ids": ids.joined(separator: ","),
                 "vs_currencies": "usd"
+            ]
+        case .priceHistory(_, let timeRange):
+            return [
+                "vs_currency": "usd",
+                "days": timeRange.rawValue
             ]
         }
     }

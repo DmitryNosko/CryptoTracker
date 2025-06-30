@@ -1,24 +1,30 @@
 PODS:
   - Alamofire (5.10.2)
+  - DGCharts (5.1.0):
+    - DGCharts/Core (= 5.1.0)
+  - DGCharts/Core (5.1.0)
   - Kingfisher (8.3.1)
   - SnapKit (5.7.1)
 
 DEPENDENCIES:
   - Alamofire
+  - DGCharts
   - Kingfisher
   - SnapKit
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - DGCharts
     - Kingfisher
     - SnapKit
 
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  DGCharts: 1c6daf585b6cfc78807af44ea690d357c410627f
   Kingfisher: 3204d23de16b5ea53541c44ca5a8efb55741dec3
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
 
-PODFILE CHECKSUM: e72922a2547607dd6d7b34ee34dcdf03895c92d9
+PODFILE CHECKSUM: da61dc9145850b97dd42c775d457f734ed0b0335
 
 COCOAPODS: 1.16.2

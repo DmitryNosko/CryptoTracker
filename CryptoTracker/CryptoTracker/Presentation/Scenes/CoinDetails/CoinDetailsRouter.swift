@@ -1,7 +1,9 @@
 import UIKit
 import Combine
 
-protocol CoinDetailsRouter {}
+protocol CoinDetailsRouter {
+    func showAlertOfType(_ alertType: AlertType) -> AnyPublisher<AlertActionType, Never>
+}
 
 final class CoinDetailsRouterImpl: CoinDetailsRouter {
     private weak var view: UIViewController?
@@ -11,5 +13,9 @@ final class CoinDetailsRouterImpl: CoinDetailsRouter {
         view: UIViewController
     ) {
         self.view = view
+    }
+
+    func showAlertOfType(_ alertType: AlertType) -> AnyPublisher<AlertActionType, Never> {
+        view?.showAlert(alertType) ?? Just(.cancel).eraseToAnyPublisher()
     }
 }

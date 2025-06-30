@@ -13,6 +13,7 @@ final class FavoritesViewController: UIViewController {
     // Combine
     private let cancelBag = CancelBag()
     private let favoriteAtIndexPathTrigger = PassthroughSubject<IndexPath, Never>()
+    private let didSelectCoinAtIndexPath = PassthroughSubject<IndexPath, Never>()
 
     // Data
     private var coinModels: [CoinModel] = []
@@ -37,7 +38,8 @@ final class FavoritesViewController: UIViewController {
 private extension FavoritesViewController {
     func bindViewModel(_ viewModel: FavoritesViewModel) {
         let input = FavoritesViewModel.Input(
-            favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher()
+            favoriteAtIndexPathTrigger: favoriteAtIndexPathTrigger.eraseToAnyPublisher(),
+            didSelectCoinAtIndexPath: didSelectCoinAtIndexPath.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(
@@ -51,20 +53,17 @@ private extension FavoritesViewController {
         output.$coinModels
             .receive(on: DispatchQueue.main)
             .sink { [weak self] coinModels in
-                guard let self else {
-                    return
-                }
 
-                self.coinModels = coinModels
+                self?.coinModels = coinModels
                 if coinModels.isEmpty {
-                    self.errorTitleLabel.isHidden = false
-                    self.errorSubtitleLabel.isHidden = false
-                    self.tableView.isHidden = true
+                    self?.errorTitleLabel.isHidden = false
+                    self?.errorSubtitleLabel.isHidden = false
+                    self?.tableView.isHidden = true
                 } else {
-                    self.errorTitleLabel.isHidden = true
-                    self.errorSubtitleLabel.isHidden = true
-                    self.tableView.isHidden = false
-                    self.tableView.reloadData()
+                    self?.errorTitleLabel.isHidden = true
+                    self?.errorSubtitleLabel.isHidden = true
+                    self?.tableView.isHidden = false
+                    self?.tableView.reloadData()
                 }
             }
             .store(in: cancelBag)
@@ -220,5 +219,13 @@ extension FavoritesViewController: UITableViewDelegate {
         heightForHeaderInSection section: Int
     ) -> CGFloat {
         return 12
+    }
+    
+    func tableView
+    (
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        didSelectCoinAtIndexPath.send(indexPath)
     }
 }

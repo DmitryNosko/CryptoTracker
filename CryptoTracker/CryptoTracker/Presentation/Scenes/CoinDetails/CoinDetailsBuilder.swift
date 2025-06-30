@@ -26,7 +26,9 @@ final class CoinDetailsBuilderImpl: CoinDetailsBuilder {
         let router = CoinDetailsRouterImpl(view: viewController)
         let viewModel = CoinDetailsViewModel(
             router: router,
-            coin: coin
+            coin: coin,
+            favoritesStore: appContext.resolve(FavoritesStore.self),
+            coinsRepository: appContext.resolve(CoinsRepository.self)
         )
         viewController.viewModel = viewModel
 

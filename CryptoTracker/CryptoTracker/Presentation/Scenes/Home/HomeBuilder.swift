@@ -16,16 +16,15 @@ final class HomeBuilderImpl: HomeBuilder {
 
     func build() -> UIViewController {
         let viewController = HomeViewController()
-        let router = HomeRouterImpl(
-            view: viewController,
-            coinDetailsBuilder: CoinDetailsBuilderImpl(appContext: appContext)
-        )
+        let coinDetailsBuilder = CoinDetailsBuilderImpl(appContext: appContext)
+        let router = HomeRouterImpl(view: viewController, coinDetailsBuilder: coinDetailsBuilder)
+
         let viewModel = HomeViewModel(
             router: router,
             coinsRepository: appContext.resolve(CoinsRepository.self),
             favoritesStore: appContext.resolve(FavoritesStore.self),
-            coinFilteringService: appContext.resolve(CoinFilteringService.self),
-            coinSortingService: appContext.resolve(CoinSortingService.self)
+            coinFilteringService: CoinFilteringServiceImpl(),
+            coinSortingService: CoinSortingServiceImpl()
         )
         viewController.viewModel = viewModel
 
