@@ -26,14 +26,14 @@ final class CoinDetailsViewController: UIViewController {
     private let chartLoadingIndicator = UIActivityIndicatorView(style: .medium)
     
     private let infoStackView = UIStackView()
-    private let marketCapView = InfoRowView(title: "Рыночная капитализация")
-    private let volumeView = InfoRowView(title: "Объем торгов")
-    private let change24hView = InfoRowView(title: "Изменение за 24ч")
-    private let high24hView = InfoRowView(title: "Максимум 24ч")
-    private let low24hView = InfoRowView(title: "Минимум 24ч")
-    private let circulatingSupplyView = InfoRowView(title: "Обращающееся предложение")
-    private let totalSupplyView = InfoRowView(title: "Общее предложение")
-    private let maxSupplyView = InfoRowView(title: "Максимальное предложение")
+    private let marketCapView = InfoRowView(title: "Market Cap")
+    private let volumeView = InfoRowView(title: "Trading Volume")
+    private let change24hView = InfoRowView(title: "24h Change")
+    private let high24hView = InfoRowView(title: "24h High")
+    private let low24hView = InfoRowView(title: "24h Low")
+    private let circulatingSupplyView = InfoRowView(title: "Circulating Supply")
+    private let totalSupplyView = InfoRowView(title: "Total Supply")
+    private let maxSupplyView = InfoRowView(title: "Max Supply")
 
     // Combine
     private let cancelBag = CancelBag()
