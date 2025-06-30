@@ -3,6 +3,10 @@ import Foundation
 final class AppContext {
     private var factories: [String: () -> Any] = [:]
 
+    init() {
+        registerDependencies()
+    }
+
     func register<T>(_ type: T.Type, factory: @escaping () -> T) {
         let key = String(describing: type)
         factories[key] = factory
@@ -14,9 +18,8 @@ final class AppContext {
             let factory = factories[key],
             let instance = factory() as? T
         else {
-            fatalError("No registered factory for \(key)")
+            fatalError("🛑 No registered factory for \(key)")
         }
-
         return instance
     }
 
@@ -31,5 +34,51 @@ final class AppContext {
                 return instance
             }
         }
+    }
+}
+
+private extension AppContext {
+    func registerDependencies() {
+        registerLazy(
+            CoinsAPIService.self,
+            factory: CoinsAPIServiceImpl()
+        )
+        registerLazy(
+            CoinCache.self,
+            factory: CoinCacheImpl(
+                filename: AppConstants.Cache.cashJsonName,
+                ttl: AppConstants.Cache.ttl
+            )
+        )
+        registerLazy(
+            FavoritesStore.self,
+            factory: FavoritesStoreImpl(key: AppConstants.FavoriteCoins.key)
+        )
+        registerLazy(
+            CoinsRepository.self,
+            factory: CoinsRepositoryImpl(
+                coinsAPIService: self.resolve(CoinsAPIService.self),
+                coinCache: self.resolve(CoinCache.self)
+            )
+        )
+        registerLazy(
+            CoinFilteringService.self,
+            factory: CoinFilteringServiceImpl()
+        )
+        registerLazy(
+            CoinSortingService.self,
+            factory: CoinSortingServiceImpl()
+        )
+        registerLazy(
+            NotificationService.self,
+            factory: NotificationServiceImpl()
+        )
+        registerLazy(
+            PriceAlertService.self,
+            factory: PriceAlertServiceImpl(
+                notificationService: self.resolve(NotificationService.self),
+                significantChangeThreshold: AppConstants.Notification.significantChangeThreshold
+            )
+        )
     }
 }

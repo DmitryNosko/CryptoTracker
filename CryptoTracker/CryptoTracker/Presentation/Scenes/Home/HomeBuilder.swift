@@ -23,8 +23,10 @@ final class HomeBuilderImpl: HomeBuilder {
             router: router,
             coinsRepository: appContext.resolve(CoinsRepository.self),
             favoritesStore: appContext.resolve(FavoritesStore.self),
-            coinFilteringService: CoinFilteringServiceImpl(),
-            coinSortingService: CoinSortingServiceImpl()
+            coinFilteringService: appContext.resolve(CoinFilteringService.self),
+            coinSortingService: appContext.resolve(CoinSortingService.self),
+            priceAlertService: appContext.resolve(PriceAlertService.self),
+            notificationService: appContext.resolve(NotificationService.self)
         )
         viewController.viewModel = viewModel
 

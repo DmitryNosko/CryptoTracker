@@ -21,19 +21,25 @@ final class HomeViewModel: CombinableViewModel {
     private let favoritesStore: FavoritesStore
     private let coinFilteringService: CoinFilteringService
     private let coinSortingService: CoinSortingService
+    private let priceAlertService: PriceAlertService
+    private let notificationService: NotificationService
 
     init(
         router: HomeRouter,
         coinsRepository: CoinsRepository,
         favoritesStore: FavoritesStore,
         coinFilteringService: CoinFilteringService,
-        coinSortingService: CoinSortingService
+        coinSortingService: CoinSortingService,
+        priceAlertService: PriceAlertService,
+        notificationService: NotificationService
     ) {
         self.router = router
         self.coinsRepository = coinsRepository
         self.favoritesStore = favoritesStore
         self.coinFilteringService = coinFilteringService
         self.coinSortingService = coinSortingService
+        self.priceAlertService = priceAlertService
+        self.notificationService = notificationService
     }
 }
 
@@ -71,6 +77,24 @@ extension HomeViewModel {
                     updated.isFavorite = favoriteCoins.contains(where: { $0.id == coin.id })
                     return updated
                 }
+            }
+            .store(in: cancelBag)
+
+        input.didLoad
+            .flatMap { [weak self] in
+                guard let self else {
+                    return Just(false).eraseToAnyPublisher()
+                }
+
+                return self.notificationService.requestPermission()
+            }
+            .debounce(for: .seconds(AppConstants.Notification.checkSignificantPriceChangesDebounce), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self else {
+                    return
+                }
+
+                self.priceAlertService.checkSignificantPriceChanges(coins: self.allCoins)
             }
             .store(in: cancelBag)
 

@@ -13,49 +13,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
 
-        registerAppContext()
-
         let rootViewController = RootBuilderImpl(appContext: appContext)
             .build()
         let rootNavigationViewController = UINavigationController(rootViewController: rootViewController)
         rootNavigationViewController.setNavigationBarHidden(true, animated: false)
         window?.rootViewController = rootNavigationViewController
         window?.makeKeyAndVisible()
-    }
-}
-
-// MARK: - AppContext Registration
-private extension SceneDelegate {
-    func registerAppContext() {
-        appContext.registerLazy(
-            CoinsAPIService.self,
-            factory: CoinsAPIServiceImpl()
-        )
-        appContext.registerLazy(
-            CoinCache.self,
-            factory: CoinCacheImpl(
-                filename: AppConstants.Cache.cashJsonName,
-                ttl: AppConstants.Cache.ttl
-            )
-        )
-        appContext.registerLazy(
-            FavoritesStore.self,
-            factory: FavoritesStoreImpl(key: AppConstants.FavoriteCoins.key)
-        )
-        appContext.registerLazy(
-            CoinsRepository.self,
-            factory: CoinsRepositoryImpl(
-                coinsAPIService: self.appContext.resolve(CoinsAPIService.self),
-                coinCache: self.appContext.resolve(CoinCache.self)
-            )
-        )
-        appContext.registerLazy(
-            CoinFilteringService.self,
-            factory: CoinFilteringServiceImpl()
-        )
-        appContext.registerLazy(
-            CoinSortingService.self,
-            factory: CoinSortingServiceImpl()
-        )
     }
 }

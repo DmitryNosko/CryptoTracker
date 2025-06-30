@@ -19,4 +19,9 @@ enum AppConstants {
     enum FavoriteCoins {
         static let key = "FavoriteCoins"
     }
+
+    enum Notification {
+        static let significantChangeThreshold = 0.01
+        static let checkSignificantPriceChangesDebounce: Double = 10.0
+    }
 }
