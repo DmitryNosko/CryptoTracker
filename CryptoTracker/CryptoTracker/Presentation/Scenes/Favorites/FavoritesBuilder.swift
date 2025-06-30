@@ -16,8 +16,10 @@ final class FavoritesBuilderImpl: FavoritesBuilder {
 
     func build() -> UIViewController {
         let viewController = FavoritesViewController()
-        let coinDetailsBuilder = CoinDetailsBuilderImpl(appContext: appContext)
-        let router = FavoritesRouterImpl(view: viewController, coinDetailsBuilder: coinDetailsBuilder)
+        let router = FavoritesRouterImpl(
+            view: viewController,
+            coinDetailsBuilder: CoinDetailsBuilderImpl(appContext: appContext)
+        )
         let viewModel = FavoritesViewModel(
             router: router,
             favoritesStore: appContext.resolve(FavoritesStore.self)
