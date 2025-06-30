@@ -76,7 +76,6 @@ extension CoinDetailsViewModel {
                     return Empty<[CoinPrice], Never>().eraseToAnyPublisher()
                 }
                 output.isLoadingPriceHistory = true
-                debugPrint("🔄 Loading price history for \(self.coin.id) with timeRange: \(timeRange.rawValue)")
                 return self.coinsRepository.fetchCoinPriceHistory(coinId: self.coin.id, timeRange: timeRange)
                     .retryWhen { [weak self] result, _ in
                         guard let self else {

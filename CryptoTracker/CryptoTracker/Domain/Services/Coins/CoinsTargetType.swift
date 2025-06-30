@@ -22,7 +22,7 @@ extension CoinsTargetType {
         case .prices:
             return AppConstants.API.Coins.prices
         case .priceHistory(let coinId, _):
-            return "/coins/\(coinId)/market_chart"
+            return AppConstants.API.Coins.priceHistory(for: coinId)
         }
     }
 

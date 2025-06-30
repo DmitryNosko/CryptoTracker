@@ -8,6 +8,9 @@ enum AppConstants {
             static let coinsMarkets = "/coins/markets"
             static let search = "/search"
             static let prices = "/simple/price"
+            static func priceHistory(for coinId: String) -> String {
+                return "/coins/\(coinId)/market_chart"
+            }
         }
     }
 
