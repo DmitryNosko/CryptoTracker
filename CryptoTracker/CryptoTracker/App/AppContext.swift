@@ -80,5 +80,9 @@ private extension AppContext {
                 significantChangeThreshold: AppConstants.Notification.significantChangeThreshold
             )
         )
+        registerLazy(
+            SectionConfigurationService.self,
+            factory: SectionConfigurationServiceImpl()
+        )
     }
 }

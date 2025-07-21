@@ -13,8 +13,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
 
-        let rootViewController = RootBuilderImpl(appContext: appContext)
-            .build()
+//        let rootViewController = RootBuilderImpl(appContext: appContext)
+//            .build()
+        let rootViewController = AppStoreViewController()
+        let viewModel = AppStoreViewModel()
+        rootViewController.viewModel = viewModel
         let rootNavigationViewController = UINavigationController(rootViewController: rootViewController)
         rootNavigationViewController.setNavigationBarHidden(true, animated: false)
         window?.rootViewController = rootNavigationViewController

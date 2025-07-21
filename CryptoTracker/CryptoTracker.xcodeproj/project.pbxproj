@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24B6DD092E276E9E006107F2 /* AppStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD082E276E96006107F2 /* AppStoreViewController.swift */; };
+		24B6DD0D2E276F34006107F2 /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD0C2E276F18006107F2 /* Car.swift */; };
+		24B6DD0F2E277AC6006107F2 /* CarCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD0E2E277ABE006107F2 /* CarCollectionViewCell.swift */; };
+		24B6DD112E277F8C006107F2 /* HeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD102E277F81006107F2 /* HeaderCollectionView.swift */; };
+		24B6DD132E27ABF2006107F2 /* Gadget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD122E27ABEB006107F2 /* Gadget.swift */; };
+		24B6DD152E27AF1D006107F2 /* GadgetCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD142E27AF16006107F2 /* GadgetCollectionViewCell.swift */; };
+		24B6DD1E2E27B777006107F2 /* CompasitionalSectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD1D2E27B76E006107F2 /* CompasitionalSectionService.swift */; };
+		24B6DD212E27B7C8006107F2 /* AppStoreSectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD202E27B7C2006107F2 /* AppStoreSectionType.swift */; };
+		24B6DD232E27BEC4006107F2 /* AppStoreCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD222E27BEBE006107F2 /* AppStoreCellType.swift */; };
+		24B6DD252E27C9CA006107F2 /* CarSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD242E27C9C7006107F2 /* CarSetup.swift */; };
+		24B6DD272E27C9F3006107F2 /* CarSetupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD262E27C9E2006107F2 /* CarSetupCollectionViewCell.swift */; };
+		24B6DD2B2E2A0D4A006107F2 /* AppStoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD2A2E2A0D44006107F2 /* AppStoreViewModel.swift */; };
+		24B6DD2E2E2E19F6006107F2 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD2D2E2E19E9006107F2 /* OnboardingViewController.swift */; };
+		24B6DD302E2E19FD006107F2 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6DD2F2E2E19F9006107F2 /* OnboardingViewModel.swift */; };
 		24F8C9A82E0EBC850005E9E1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8C99E2E0EBC850005E9E1 /* AppDelegate.swift */; };
 		24F8C9A92E0EBC850005E9E1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F8C9A52E0EBC850005E9E1 /* SceneDelegate.swift */; };
 		24F8C9AB2E0EBC850005E9E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24F8C99F2E0EBC850005E9E1 /* Images.xcassets */; };
@@ -71,6 +85,20 @@
 
 /* Begin PBXFileReference section */
 		0476C91DBEFE9B0D092363A5 /* Pods-CryptoTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CryptoTracker.debug.xcconfig"; path = "Target Support Files/Pods-CryptoTracker/Pods-CryptoTracker.debug.xcconfig"; sourceTree = "<group>"; };
+		24B6DD082E276E96006107F2 /* AppStoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreViewController.swift; sourceTree = "<group>"; };
+		24B6DD0C2E276F18006107F2 /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
+		24B6DD0E2E277ABE006107F2 /* CarCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarCollectionViewCell.swift; sourceTree = "<group>"; };
+		24B6DD102E277F81006107F2 /* HeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCollectionView.swift; sourceTree = "<group>"; };
+		24B6DD122E27ABEB006107F2 /* Gadget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gadget.swift; sourceTree = "<group>"; };
+		24B6DD142E27AF16006107F2 /* GadgetCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GadgetCollectionViewCell.swift; sourceTree = "<group>"; };
+		24B6DD1D2E27B76E006107F2 /* CompasitionalSectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompasitionalSectionService.swift; sourceTree = "<group>"; };
+		24B6DD202E27B7C2006107F2 /* AppStoreSectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreSectionType.swift; sourceTree = "<group>"; };
+		24B6DD222E27BEBE006107F2 /* AppStoreCellType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreCellType.swift; sourceTree = "<group>"; };
+		24B6DD242E27C9C7006107F2 /* CarSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSetup.swift; sourceTree = "<group>"; };
+		24B6DD262E27C9E2006107F2 /* CarSetupCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSetupCollectionViewCell.swift; sourceTree = "<group>"; };
+		24B6DD2A2E2A0D44006107F2 /* AppStoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreViewModel.swift; sourceTree = "<group>"; };
+		24B6DD2D2E2E19E9006107F2 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		24B6DD2F2E2E19F9006107F2 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		24F8C9762E0EB9A10005E9E1 /* CryptoTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CryptoTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24F8C99E2E0EBC850005E9E1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24F8C99F2E0EBC850005E9E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -148,6 +176,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		24B6DD072E276E16006107F2 /* CompositionalLayout */ = {
+			isa = PBXGroup;
+			children = (
+				24B6DD0A2E276F09006107F2 /* Models */,
+				24B6DD0B2E276F0E006107F2 /* Views */,
+				24B6DD2A2E2A0D44006107F2 /* AppStoreViewModel.swift */,
+				24B6DD082E276E96006107F2 /* AppStoreViewController.swift */,
+			);
+			path = CompositionalLayout;
+			sourceTree = "<group>";
+		};
+		24B6DD0A2E276F09006107F2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				24B6DD242E27C9C7006107F2 /* CarSetup.swift */,
+				24B6DD122E27ABEB006107F2 /* Gadget.swift */,
+				24B6DD0C2E276F18006107F2 /* Car.swift */,
+				24B6DD202E27B7C2006107F2 /* AppStoreSectionType.swift */,
+				24B6DD222E27BEBE006107F2 /* AppStoreCellType.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		24B6DD0B2E276F0E006107F2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				24B6DD102E277F81006107F2 /* HeaderCollectionView.swift */,
+				24B6DD0E2E277ABE006107F2 /* CarCollectionViewCell.swift */,
+				24B6DD142E27AF16006107F2 /* GadgetCollectionViewCell.swift */,
+				24B6DD262E27C9E2006107F2 /* CarSetupCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		24B6DD1C2E27B75B006107F2 /* CompasitionalSectionService */ = {
+			isa = PBXGroup;
+			children = (
+				24B6DD1D2E27B76E006107F2 /* CompasitionalSectionService.swift */,
+			);
+			path = CompasitionalSectionService;
+			sourceTree = "<group>";
+		};
+		24B6DD2C2E2E19C6006107F2 /* ComposiotionalLayout2 */ = {
+			isa = PBXGroup;
+			children = (
+				24B6DD2F2E2E19F9006107F2 /* OnboardingViewModel.swift */,
+				24B6DD2D2E2E19E9006107F2 /* OnboardingViewController.swift */,
+			);
+			path = ComposiotionalLayout2;
+			sourceTree = "<group>";
+		};
 		24F8C96D2E0EB9A10005E9E1 = {
 			isa = PBXGroup;
 			children = (
@@ -310,6 +389,8 @@
 		24F8C9C22E0EBDFF0005E9E1 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				24B6DD2C2E2E19C6006107F2 /* ComposiotionalLayout2 */,
+				24B6DD072E276E16006107F2 /* CompositionalLayout */,
 				24F8C9C32E0EBE0B0005E9E1 /* Launch */,
 				24F8C9C42E0EBFC20005E9E1 /* Root */,
 				24F8C9DB2E0ED1CB0005E9E1 /* Dashboard */,
@@ -412,6 +493,7 @@
 		24F8CA132E0FEE590005E9E1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				24B6DD1C2E27B75B006107F2 /* CompasitionalSectionService */,
 				24F8CA262E11C18C0005E9E1 /* CoinFilteringService.swift */,
 				24F8CA242E11C12A0005E9E1 /* CoinSortingService.swift */,
 				24F8CA1D2E10387F0005E9E1 /* FavoritesStore.swift */,
@@ -586,55 +668,69 @@
 				24F8C9CF2E0EC09C0005E9E1 /* RootViewController.swift in Sources */,
 				24F8C9CB2E0EC0890005E9E1 /* RootRouter.swift in Sources */,
 				24F8C9FF2E0EE2630005E9E1 /* CoinsAPIService.swift in Sources */,
+				24B6DD2E2E2E19F6006107F2 /* OnboardingViewController.swift in Sources */,
+				24B6DD302E2E19FD006107F2 /* OnboardingViewModel.swift in Sources */,
 				24F8C9A82E0EBC850005E9E1 /* AppDelegate.swift in Sources */,
 				24F8CA152E0FEE690005E9E1 /* CoinCash.swift in Sources */,
 				24F8CA072E0F060F0005E9E1 /* AlertType.swift in Sources */,
 				24F8CA2D2E11C4170005E9E1 /* CoinDetailsViewController.swift in Sources */,
+				24B6DD2B2E2A0D4A006107F2 /* AppStoreViewModel.swift in Sources */,
 				24F8CA332E11E08B0005E9E1 /* CoinPriceChartView.swift in Sources */,
 				24F8CA2E2E11C4170005E9E1 /* CoinDetailsViewModel.swift in Sources */,
 				24F8CA2F2E11C4170005E9E1 /* CoinDetailsRouter.swift in Sources */,
 				24F8CA302E11C4170005E9E1 /* CoinDetailsBuilder.swift in Sources */,
 				24F8CA0E2E0F18410005E9E1 /* SearchView.swift in Sources */,
+				24B6DD092E276E9E006107F2 /* AppStoreViewController.swift in Sources */,
 				24F8C9BF2E0EBDD20005E9E1 /* AppContext.swift in Sources */,
 				24F8CA202E103BCC0005E9E1 /* CoinUIModel.swift in Sources */,
 				24F8CA1A2E1016F10005E9E1 /* SortOptionType.swift in Sources */,
 				24F8CA1C2E10171C0005E9E1 /* FilterOptionType.swift in Sources */,
+				24B6DD0D2E276F34006107F2 /* Car.swift in Sources */,
 				24F8CA3A2E124BD60005E9E1 /* PriceAxisValueFormatter.swift in Sources */,
 				24F8CA3C2E124DDC0005E9E1 /* TimeRangeType.swift in Sources */,
 				24F8C9E12E0ED1FA0005E9E1 /* DashboardRouter.swift in Sources */,
+				24B6DD1E2E27B777006107F2 /* CompasitionalSectionService.swift in Sources */,
 				24F8C9ED2E0ED6BA0005E9E1 /* HomeBuilder.swift in Sources */,
 				24F8CA272E11C1990005E9E1 /* CoinFilteringService.swift in Sources */,
+				24B6DD212E27B7C8006107F2 /* AppStoreSectionType.swift in Sources */,
 				24F8CA182E0FF8CF0005E9E1 /* CoinCacheWrapper.swift in Sources */,
 				24F8C9EE2E0ED6BA0005E9E1 /* HomeRouter.swift in Sources */,
 				24F8C9F52E0ED8750005E9E1 /* FavoritesRouter.swift in Sources */,
 				24F8C9F62E0ED8750005E9E1 /* FavoritesViewModel.swift in Sources */,
 				24F8CA032E0EFD1E0005E9E1 /* CoinModel.swift in Sources */,
 				24F8C9F72E0ED8750005E9E1 /* FavoritesViewController.swift in Sources */,
+				24B6DD0F2E277AC6006107F2 /* CarCollectionViewCell.swift in Sources */,
 				24F8C9F82E0ED8750005E9E1 /* FavoritesBuilder.swift in Sources */,
 				24F8CA382E12488D0005E9E1 /* InfoRowView.swift in Sources */,
 				24F8CA1E2E1038810005E9E1 /* FavoritesStore.swift in Sources */,
+				24B6DD252E27C9CA006107F2 /* CarSetup.swift in Sources */,
 				24F8CA3F2E1271360005E9E1 /* PriceAlertService.swift in Sources */,
 				24F8CA402E1271360005E9E1 /* NotificationService.swift in Sources */,
 				24F8CA102E0FD41A0005E9E1 /* SearchCoin.swift in Sources */,
 				24F8C9EF2E0ED6BA0005E9E1 /* HomeViewController.swift in Sources */,
+				24B6DD232E27BEC4006107F2 /* AppStoreCellType.swift in Sources */,
 				24F8C9F02E0ED6BA0005E9E1 /* HomeViewModel.swift in Sources */,
 				24F8C9FD2E0EE2530005E9E1 /* APIError.swift in Sources */,
 				24F8C9E22E0ED1FA0005E9E1 /* DashboardViewController.swift in Sources */,
 				24F8C9E32E0ED1FA0005E9E1 /* DashboardViewModel.swift in Sources */,
 				24F8C9E52E0ED1FA0005E9E1 /* DashboardBuilder.swift in Sources */,
 				24F8CA052E0EFED90005E9E1 /* CoinsRepository.swift in Sources */,
+				24B6DD272E27C9F3006107F2 /* CarSetupCollectionViewCell.swift in Sources */,
 				24F8C9FB2E0EE1950005E9E1 /* CoinsTargetType.swift in Sources */,
 				24F8C9A92E0EBC850005E9E1 /* SceneDelegate.swift in Sources */,
 				24F8C9D52E0EC19A0005E9E1 /* ReuseIdentifiable.swift in Sources */,
 				24F8CA352E12462B0005E9E1 /* Double+Extensions.swift in Sources */,
 				24F8C9C72E0EC0470005E9E1 /* CombinableViewModel.swift in Sources */,
+				24B6DD112E277F8C006107F2 /* HeaderCollectionView.swift in Sources */,
 				24F8C9D32E0EC1760005E9E1 /* Transformer.swift in Sources */,
 				24F8CA252E11C1320005E9E1 /* CoinSortingService.swift in Sources */,
 				24F8C9CD2E0EC0910005E9E1 /* RootBuilder.swift in Sources */,
 				24F8CA092E0F08F10005E9E1 /* UIViewController+Extensions.swift in Sources */,
+				24B6DD132E27ABF2006107F2 /* Gadget.swift in Sources */,
 				24F8C9D12E0EC0A30005E9E1 /* RootViewModel.swift in Sources */,
 				24F8C9D82E0EC21C0005E9E1 /* Combine+Extensions.swift in Sources */,
 				24F8C9C92E0EC05D0005E9E1 /* CancelBag.swift in Sources */,
+				24B6DD152E27AF1D006107F2 /* GadgetCollectionViewCell.swift in Sources */,
 				24F8CA122E0FDC390005E9E1 /* CoinPrice.swift in Sources */,
 				24F8C9B72E0EBD330005E9E1 /* AppConstants.swift in Sources */,
 				24F8CA232E1066DD0005E9E1 /* FavoritesCoinTableViewCell.swift in Sources */,
