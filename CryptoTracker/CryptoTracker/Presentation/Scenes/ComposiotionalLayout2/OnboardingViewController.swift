@@ -52,5 +52,8 @@ extension OnboardingViewController: UICollectionViewDelegate {
         didSelectItemAt indexPath: IndexPath
     ) {
         print("didSelectItemAt")
+        print("didSelectItemAt")
+        print("didSelectItemAt")
+        print("didSelectItemAt")
     }
 }
