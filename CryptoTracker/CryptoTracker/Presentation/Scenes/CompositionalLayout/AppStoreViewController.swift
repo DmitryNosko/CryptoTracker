@@ -158,6 +158,8 @@ private extension AppStoreViewController {
             return self.sectionConfigurationService.buildSection(for: currentSection)
         }
 
+        print("test")
+
         return layout
     }
 
